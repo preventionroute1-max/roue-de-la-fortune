@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Roue de la Torture — Télécommande</title>
+<style>
+  :root{--or:#ffcf33;--or-fonce:#e0a400;--rouge:#d9264a;--vert:#1faa59;--bleu:#2d6bd4;--fond:#0a1633;--fond2:#132453;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    background:radial-gradient(circle at 50% -10%,#1c3a7a 0%,var(--fond) 60%,#050b1f 100%);
+    color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:22px;text-align:center;}
+  h1{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;
+    background:linear-gradient(180deg,#fff,var(--or) 60%,var(--or-fonce));-webkit-background-clip:text;
+    background-clip:text;-webkit-text-fill-color:transparent;}
+  .sous{color:var(--or);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;opacity:.85;}
+  .carte{background:linear-gradient(160deg,var(--fond2),#0c1a3d);border:2px solid rgba(255,207,51,.3);
+    border-radius:18px;padding:24px 20px;width:100%;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.4);}
+  label{display:block;text-align:left;font-size:13px;opacity:.8;margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px;}
+  input{width:100%;padding:15px;border-radius:12px;border:2px solid var(--or);background:#0b1020;color:#fff;
+    font-size:22px;font-weight:800;text-align:center;letter-spacing:4px;text-transform:uppercase;font-family:inherit;}
+  input:focus{outline:none;box-shadow:0 0 0 3px rgba(255,207,51,.4);}
+  .slots{display:flex;gap:8px;margin-top:10px;}
+  .slot{flex:1;padding:14px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.2);background:#0b1020;
+    color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:.15s;}
+  .slot.sel{border-color:var(--or);background:rgba(255,207,51,.15);color:var(--or);}
+  .btn{font-family:inherit;font-weight:900;border:none;border-radius:40px;cursor:pointer;width:100%;
+    padding:18px;font-size:20px;letter-spacing:1px;text-transform:uppercase;margin-top:20px;
+    transition:transform .1s,filter .2s,opacity .2s;box-shadow:0 6px 0 rgba(0,0,0,.35);}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.35);}
+  .btn:disabled{opacity:.35;cursor:not-allowed;filter:grayscale(.6);}
+  .btn-or{background:linear-gradient(180deg,#ffe066,var(--or-fonce));color:#3a2600;}
+  .btn-vert{background:linear-gradient(180deg,#37d17a,var(--vert));color:#063d21;}
+  .msg{min-height:24px;margin-top:14px;font-size:14px;font-weight:600;}
+  .msg.err{color:#ff9ab0;}
+  .msg.ok{color:#8fe6b0;}
+
+  /* écran de jeu (après connexion) */
+  #jeu{display:none;}
+  #jeu.on{display:block;}
+  #accueil.off{display:none;}
+  .moi{font-size:15px;opacity:.85;margin-bottom:6px;}
+  .moi b{color:var(--or);font-size:20px;}
+  .pseudo-zone{margin:10px 0 2px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.12);}
+  .statut{font-size:20px;font-weight:800;margin:18px 0;min-height:52px;display:flex;align-items:center;justify-content:center;}
+  .statut.tour{color:var(--or);animation:pulse 1s infinite;}
+  @keyframes pulse{50%{opacity:.6;}}
+  .btn-tourner{background:linear-gradient(180deg,#ffe066,var(--or-fonce));color:#3a2600;font-size:26px;padding:26px;}
+  .pastille{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;border:3px solid var(--or);
+    display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 3px 10px rgba(0,0,0,.4);}
+</style>
+</head>
+<body>
+
+<h1>Roue de la Torture</h1>
+<div class="sous">Télécommande candidat</div>
+
+<!-- ÉCRAN 1 : rejoindre -->
+<div class="carte" id="accueil">
+  <label>Code du salon (affiché à l'écran)</label>
+  <input id="inCode" maxlength="4" placeholder="XXXX" autocomplete="off" inputmode="text">
+  <label>Votre pseudo (affiché à l'écran)</label>
+  <input id="inNom" maxlength="16" placeholder="Votre pseudo" style="font-size:18px;letter-spacing:1px;text-transform:none;">
+  <label>Quel candidat êtes-vous ?</label>
+  <div class="slots" id="slots">
+    <button class="slot" data-slot="0">Candidat 1</button>
+    <button class="slot" data-slot="1">Candidat 2</button>
+    <button class="slot" data-slot="2">Candidat 3</button>
+    <button class="slot" data-slot="3">Candidat 4</button>
+  </div>
+  <button class="btn btn-vert" id="btnJoin">Rejoindre le jeu</button>
+  <div class="msg" id="msgAccueil"></div>
+</div>
+
+<!-- ÉCRAN 2 : jeu -->
+<div class="carte" id="jeu">
+  <div class="pastille" id="maPastille">🎮</div>
+  <div class="moi">Vous jouez : <b id="monNom">Candidat</b></div>
+  <div class="pseudo-zone">
+    <input id="inPseudo" maxlength="16" placeholder="Changer mon pseudo" style="font-size:16px;letter-spacing:1px;text-transform:none;padding:12px;">
+    <button class="btn btn-or" id="btnPseudo" style="margin-top:8px;padding:12px;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.3);">✏️ Afficher mon pseudo à l'écran</button>
+  </div>
+  <div class="statut" id="statut">Connexion…</div>
+  <button class="btn btn-tourner" id="btnTourner" disabled>Tourner la roue</button>
+  <div class="msg" id="msgJeu"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function(){
+  var socket = io();
+  var monSlot = null;
+  var noms = ['Candidat 1','Candidat 2','Candidat 3','Candidat 4'];
+
+  // Pré-remplir le code depuis l'URL (?code=XXXX) via le QR
+  var params = new URLSearchParams(location.search);
+  if (params.get('code')) document.getElementById('inCode').value = params.get('code').toUpperCase();
+
+  // sélection du candidat
+  var slotChoisi = null;
+  document.querySelectorAll('.slot').forEach(function(b){
+    b.onclick = function(){
+      document.querySelectorAll('.slot').forEach(function(x){ x.classList.remove('sel'); });
+      b.classList.add('sel');
+      slotChoisi = parseInt(b.dataset.slot, 10);
+    };
+  });
+
+  var msgA = document.getElementById('msgAccueil');
+  document.getElementById('btnJoin').onclick = function(){
+    var code = document.getElementById('inCode').value.toUpperCase().trim();
+    var nom  = document.getElementById('inNom').value.trim();
+    if (code.length < 4){ msgA.className='msg err'; msgA.textContent='Entrez le code à 4 lettres.'; return; }
+    msgA.className='msg'; msgA.textContent='Connexion…';
+    socket.emit('joueur:join', { code: code, slot: slotChoisi, nom: nom }, function(res){
+      if (!res.ok){ msgA.className='msg err'; msgA.textContent = res.err || 'Impossible de rejoindre.'; return; }
+      monSlot = res.slot;
+      if (nom) noms[monSlot] = nom;
+      document.getElementById('accueil').classList.add('off');
+      document.getElementById('jeu').classList.add('on');
+      document.getElementById('monNom').textContent = noms[monSlot] || ('Candidat ' + (monSlot+1));
+      document.getElementById('inPseudo').value = nom || '';
+      document.getElementById('maPastille').textContent = ['1️⃣','2️⃣','3️⃣','4️⃣'][monSlot] || '🎮';
+      if (res.etat) majEtat(res.etat);
+      else document.getElementById('statut').textContent = 'En attente du début…';
+    });
+  };
+
+  // Changer son pseudo après la connexion → l'écran met à jour la carte candidat
+  var inPseudo = document.getElementById('inPseudo');
+  document.getElementById('btnPseudo').onclick = function(){
+    var p = inPseudo.value.trim();
+    if (!p){ msgJ.className='msg err'; msgJ.textContent='Entrez un pseudo.'; return; }
+    if (monSlot === null){ return; }
+    noms[monSlot] = p;
+    document.getElementById('monNom').textContent = p;
+    socket.emit('joueur:nom', { nom: p });
+    msgJ.className='msg ok'; msgJ.textContent='Pseudo envoyé à l’écran ✔';
+    setTimeout(function(){ msgJ.textContent=''; }, 1500);
+  };
+  inPseudo.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('btnPseudo').click(); });
+
+  var btn = document.getElementById('btnTourner');
+  var statut = document.getElementById('statut');
+  var msgJ = document.getElementById('msgJeu');
+
+  function majEtat(e){
+    if (e.noms) noms = e.noms;
+    document.getElementById('monNom').textContent = noms[monSlot] || ('Candidat ' + (monSlot+1));
+    var monTour = (e.actif === monSlot);
+    if (monTour && e.peutTourner){
+      statut.className = 'statut tour';
+      statut.textContent = '🎯 À VOUS ! Lancez la roue';
+      btn.disabled = false;
+    } else if (monTour && !e.peutTourner){
+      statut.className = 'statut';
+      statut.textContent = '✍️ À vous — choisissez une lettre sur l’écran';
+      btn.disabled = true;
+    } else {
+      statut.className = 'statut';
+      statut.textContent = '⏳ Au tour de ' + (noms[e.actif] || ('Candidat ' + (e.actif+1)));
+      btn.disabled = true;
+    }
+  }
+
+  btn.onclick = function(){
+    btn.disabled = true;                 // désactivation optimiste
+    msgJ.className='msg ok'; msgJ.textContent='Roue lancée !';
+    setTimeout(function(){ msgJ.textContent=''; }, 1500);
+    socket.emit('joueur:tourner');
+  };
+
+  socket.on('etat', majEtat);
+  socket.on('hostParti', function(){
+    statut.className='statut'; statut.textContent='⚠️ La partie a été fermée sur l’écran principal.';
+    btn.disabled = true;
+  });
+  socket.on('disconnect', function(){
+    statut.className='statut'; statut.textContent='🔌 Connexion perdue… reconnexion…';
+    btn.disabled = true;
+  });
+})();
+</script>
+</body>
+</html>

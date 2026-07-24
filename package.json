@@ -1,0 +1,19 @@
+{
+  "name": "roue-de-la-fortune",
+  "version": "1.0.0",
+  "description": "La Roue de la Torture - jeu de plateau televise avec telecommandes telephone (Node + Socket.io)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}

@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Roue de la Torture</title>
+<style>
+  :root{
+    --or:#ffcf33;
+    --or-fonce:#e0a400;
+    --rouge:#d9264a;
+    --violet:#5b2a86;
+    --bleu:#1b3a6b;
+    --bleu-clair:#2d6bd4;
+    --vert:#1faa59;
+    --fond:#0a1633;
+    --fond2:#132453;
+    --texte:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    background:radial-gradient(circle at 50% -10%,#1c3a7a 0%,var(--fond) 55%,#050b1f 100%);
+    color:var(--texte);
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    padding:8px 16px 6px;
+  }
+  h1{
+    text-align:center;
+    font-size:clamp(22px,3.2vw,42px);
+    font-weight:900;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    background:linear-gradient(180deg,#fff 0%,var(--or) 55%,var(--or-fonce) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,.6));
+    margin-bottom:1px;
+    flex:0 0 auto;
+  }
+  .sous-titre{text-align:center;color:var(--or);font-weight:600;letter-spacing:3px;margin-bottom:4px;font-size:12px;text-transform:uppercase;opacity:.85;flex:0 0 auto;}
+
+  /* en-tête : colonne vide (gauche) | titre centré | boutons (droite) */
+  .entete{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;flex:0 0 auto;}
+  .entete-titres{grid-column:2;min-width:0;}
+  /* barre du haut : réglages + musique — dans la 3e colonne, alignée à droite */
+  .barre-haut{grid-column:3;justify-self:end;display:flex;gap:10px;z-index:40;}
+  .btn-icone{
+    background:linear-gradient(160deg,var(--fond2),#0c1a3d);border:2px solid rgba(255,207,51,.35);
+    color:#fff;border-radius:12px;padding:9px 14px;cursor:pointer;font-size:15px;font-weight:700;
+    font-family:inherit;transition:.2s;
+  }
+  .btn-icone:hover{border-color:var(--or);filter:brightness(1.15);}
+  .btn-icone.on{background:linear-gradient(160deg,#1f7a45,#0d4a29);border-color:var(--vert);}
+
+  .layout{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    width:100%;
+    max-width:1320px;
+    margin:0 auto;
+  }
+  /* scène : roue à gauche, plateau à droite, occupe toute la hauteur restante */
+  .scene{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    gap:24px;
+  }
+  .col-roue{
+    flex:0 0 auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    min-height:0;height:100%;
+  }
+  .col-plateau{
+    flex:1 1 0;
+    min-width:0;min-height:0;height:100%;
+    display:flex;flex-direction:column;justify-content:center;gap:8px;
+  }
+
+  /* ---------- JOUEURS : rangée compacte ---------- */
+  .barre-joueurs{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    align-items:stretch;
+    width:100%;
+    flex-wrap:wrap;
+    flex:0 0 auto;
+  }
+  .joueur{
+    flex:1 1 220px;
+    max-width:300px;
+    background:linear-gradient(160deg,var(--fond2),#0c1a3d);
+    border:2px solid rgba(255,207,51,.25);
+    border-radius:14px;
+    padding:7px 12px;
+    position:relative;
+    transition:transform .25s,box-shadow .25s,border-color .25s;
+    cursor:default;
+  }
+  .joueur.actif{
+    border-color:var(--or);
+    box-shadow:0 0 0 3px rgba(255,207,51,.4),0 0 34px rgba(255,207,51,.55);
+    transform:translateY(-3px) scale(1.02);
+  }
+  .joueur.cible{
+    cursor:pointer;
+    border-color:var(--rouge);
+    box-shadow:0 0 22px rgba(217,38,74,.7);
+    animation:pulseCible .9s infinite;
+  }
+  @keyframes pulseCible{50%{box-shadow:0 0 34px rgba(217,38,74,1);}}
+  .joueur .badge-tel{
+    position:absolute;top:8px;right:10px;font-size:15px;
+    filter:drop-shadow(0 0 4px rgba(55,209,122,.9));
+  }
+  .joueur .badge-tour{
+    position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+    background:var(--or);color:#3a2600;font-weight:800;font-size:11px;
+    padding:3px 12px;border-radius:20px;letter-spacing:1px;
+    display:none;text-transform:uppercase;white-space:nowrap;
+  }
+  .joueur.actif .badge-tour{display:block;}
+  .joueur.elimine{opacity:.38;filter:grayscale(.85);}
+  .joueur.elimine::after{content:'ÉLIMINÉ';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);
+    background:var(--rouge);color:#fff;font-weight:800;font-size:13px;letter-spacing:1px;padding:3px 12px;border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);pointer-events:none;}
+  .joueur-entete{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+  .pion{width:46px;height:46px;border-radius:11px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.5);
+    border:2px solid rgba(255,255,255,.45);cursor:pointer;overflow:hidden;position:relative;
+    display:flex;align-items:center;justify-content:center;transition:transform .15s,border-color .15s;}
+  .pion:hover{transform:scale(1.08);border-color:var(--or);}
+  .pion img{width:100%;height:100%;object-fit:contain;display:block;}
+  .pion .emo{font-size:30px;line-height:1;}
+  .pion::after{content:'✎';position:absolute;bottom:-2px;right:-2px;font-size:11px;
+    background:var(--or);color:#3a2600;border-radius:50%;width:16px;height:16px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.5);}
+  /* grille d'avatars dans la modale */
+  .grille-avatars{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0;}
+  .av-choix{width:64px;height:64px;border-radius:14px;border:2px solid rgba(255,255,255,.2);
+    background:#0b1020;font-size:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:.15s;overflow:hidden;}
+  .av-choix:hover{border-color:var(--or);transform:scale(1.1);}
+  .av-choix img{width:100%;height:100%;object-fit:contain;}
+  .nom-input{
+    background:transparent;border:none;color:#fff;font-size:17px;font-weight:800;
+    width:100%;border-bottom:1px dashed transparent;padding:1px 0;
+  }
+  .nom-input:focus{outline:none;border-bottom-color:var(--or);}
+  .cagnotte{
+    font-size:23px;font-weight:900;color:var(--or);
+    text-align:center;margin:1px 0 0;letter-spacing:1px;
+    text-shadow:0 2px 4px rgba(0,0,0,.5);
+  }
+  .cagnotte-label{text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:1px;opacity:.6;}
+  .total-general{text-align:center;font-size:11px;margin-top:2px;color:#9fc0ff;}
+  .total-general b{color:#fff;font-size:13px;}
+
+  /* ---------- CENTRE : ROUE ---------- */
+  .colonne-centre{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:640px;}
+  .roue-zone{position:relative;width:min(52vh,46vw,640px);height:min(52vh,46vw,640px);flex:0 0 auto;}
+  .fleche{
+    position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;
+    border-top:34px solid var(--or);z-index:5;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6));
+  }
+  #roue{
+    width:100%;height:100%;border-radius:50%;
+    box-shadow:0 0 0 10px var(--or-fonce),0 0 0 16px #7a5a00,0 14px 40px rgba(0,0,0,.6);
+    transition:transform 5s cubic-bezier(.17,.67,.14,1);
+    background:#111;
+  }
+  .moyeu{
+    position:absolute;top:50%;left:50%;width:64px;height:64px;
+    transform:translate(-50%,-50%);border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff5cf,var(--or) 45%,var(--or-fonce));
+    border:4px solid #7a5a00;z-index:4;display:flex;align-items:center;justify-content:center;
+    font-size:26px;box-shadow:0 3px 10px rgba(0,0,0,.5);
+  }
+  .btn{
+    font-family:inherit;font-weight:800;border:none;border-radius:40px;cursor:pointer;
+    padding:14px 30px;font-size:17px;letter-spacing:1px;text-transform:uppercase;
+    transition:transform .12s,filter .2s,opacity .2s;
+    box-shadow:0 5px 0 rgba(0,0,0,.35),0 6px 16px rgba(0,0,0,.4);
+  }
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.35);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.5);}
+  .btn-tourner{background:linear-gradient(180deg,#ffe066,var(--or-fonce));color:#3a2600;font-size:22px;padding:16px 44px;}
+  .btn-sec{background:linear-gradient(180deg,var(--bleu-clair),#194da0);color:#fff;padding:11px 22px;font-size:14px;}
+  .btn-rouge{background:linear-gradient(180deg,#ff5c7a,var(--rouge));color:#fff;padding:11px 22px;font-size:14px;}
+  .btn-vert{background:linear-gradient(180deg,#37d17a,var(--vert));color:#063d21;}
+  .btn-violet{background:linear-gradient(180deg,#9a63d0,var(--violet));color:#fff;padding:11px 22px;font-size:14px;}
+
+  .resultat-roue{
+    min-height:34px;font-size:22px;font-weight:800;text-align:center;
+    padding:5px 20px;border-radius:12px;letter-spacing:1px;transition:.3s;
+  }
+
+  /* ---------- CHRONOMÈTRE DE RÉPONSE ---------- */
+  .chrono{
+    display:flex;align-items:baseline;gap:6px;justify-content:center;
+    font-size:38px;font-weight:900;letter-spacing:1px;color:#fff;
+    background:linear-gradient(160deg,var(--fond2),#0c1a3d);
+    border:3px solid var(--vert);border-radius:16px;
+    padding:6px 26px;min-width:140px;
+    box-shadow:0 0 20px rgba(31,170,89,.5);
+    transition:border-color .2s,box-shadow .2s,color .2s;
+  }
+  .chrono small{font-size:17px;opacity:.7;font-weight:700;align-self:center;}
+  .chrono.urgent{
+    border-color:var(--rouge);color:#ff8fa6;
+    box-shadow:0 0 30px rgba(217,38,74,.85);animation:pulseCible .5s infinite;
+  }
+
+  /* ---------- PLATEAU ---------- */
+  .plateau-bloc{width:100%;background:linear-gradient(160deg,var(--fond2),#0c1a3d);border:2px solid rgba(255,207,51,.25);border-radius:16px;padding:12px 14px;}
+  .categorie{text-align:center;font-size:17px;font-weight:700;color:var(--or);margin-bottom:8px;line-height:1.25;}
+  .grille{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 30px;}
+  .mot{display:flex;gap:5px;}
+  .case{
+    width:clamp(30px,6vw,46px);height:clamp(42px,8vw,62px);
+    display:flex;align-items:center;justify-content:center;
+    font-size:clamp(20px,4vw,34px);font-weight:900;border-radius:6px;
+    background:#0b1020;border:2px solid #223;color:#fff;
+    transition:transform .3s,background .3s;
+  }
+  .case.vide{background:transparent;border:none;}
+  .case.fixe{background:linear-gradient(160deg,#ffcf33,#e0a400);color:#3a2600;border-color:#7a5a00;}
+  .case.lettre{background:linear-gradient(160deg,#1d4fa8,#0a2a63);border-color:#3f74d1;}
+  .case.revelee{background:linear-gradient(160deg,#fff,#e8ecff);color:var(--bleu);border-color:var(--or);
+    animation:flip .5s;}
+  @keyframes flip{0%{transform:rotateX(90deg);}100%{transform:rotateX(0);}}
+
+  /* ---------- CLAVIER ---------- */
+  .clavier{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;}
+  .touche{
+    width:38px;height:44px;border-radius:8px;border:none;cursor:pointer;
+    font-weight:800;font-size:17px;font-family:inherit;
+    background:linear-gradient(180deg,#2d4d8f,#16294f);color:#fff;
+    box-shadow:0 3px 0 rgba(0,0,0,.4);transition:.12s;
+  }
+  .touche:hover:not(:disabled){filter:brightness(1.2);}
+  .touche.voyelle{background:linear-gradient(180deg,#7a4fb0,#43206e);}
+  .touche:disabled{opacity:.25;cursor:not-allowed;}
+  .touche.ok{background:linear-gradient(180deg,#37d17a,var(--vert));color:#063d21;}
+  .touche.ko{background:linear-gradient(180deg,#555,#333);color:#888;}
+  .touche.dispo-voyelle{box-shadow:0 0 0 3px var(--or),0 3px 0 rgba(0,0,0,.4);animation:pulseCible 1s infinite;}
+
+  /* ---------- CONSIGNE ---------- */
+  .consigne{
+    text-align:center;font-size:16px;font-weight:600;min-height:26px;
+    padding:10px 16px;border-radius:12px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);margin-top:6px;
+  }
+  .consigne.action{background:rgba(255,207,51,.15);border-color:var(--or);color:var(--or);}
+  .consigne.holdup{background:rgba(217,38,74,.18);border-color:var(--rouge);color:#ff9ab0;animation:pulseTexte 1s infinite;}
+  @keyframes pulseTexte{50%{opacity:.6;}}
+
+  .barre-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
+  .zone-devine{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+  .zone-devine input{
+    padding:11px 16px;border-radius:10px;border:2px solid var(--or);background:#0b1020;color:#fff;
+    font-size:16px;font-family:inherit;font-weight:700;text-transform:uppercase;min-width:240px;
+  }
+  .zone-devine input:focus{outline:none;box-shadow:0 0 0 3px rgba(255,207,51,.4);}
+  .cache{display:none!important;}
+
+  /* ---------- OVERLAYS ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(3,8,22,.85);z-index:50;
+    display:none;align-items:center;justify-content:center;text-align:center;padding:20px;
+  }
+  .overlay.on{display:flex;}
+  .carte-victoire{
+    background:linear-gradient(160deg,var(--violet),var(--bleu));
+    border:3px solid var(--or);border-radius:24px;padding:40px 54px;
+    box-shadow:0 0 60px rgba(255,207,51,.6);animation:pop .5s;
+  }
+  @keyframes pop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  .carte-victoire h2{font-size:40px;color:var(--or);margin-bottom:8px;}
+  .carte-victoire .gagnant{font-size:30px;font-weight:900;margin-bottom:6px;}
+  .carte-victoire .gain{font-size:22px;color:var(--or);margin-bottom:22px;}
+
+  /* ---------- MODALE RÉGLAGES ---------- */
+  .modale{
+    background:linear-gradient(160deg,#16295a,#0a1531);border:3px solid var(--or);
+    border-radius:20px;padding:26px;max-width:640px;width:100%;max-height:88vh;overflow:auto;text-align:left;
+    box-shadow:0 0 50px rgba(0,0,0,.7);
+  }
+  .modale h2{color:var(--or);font-size:24px;margin-bottom:6px;text-align:center;}
+  .modale .aide{font-size:13px;opacity:.7;margin-bottom:16px;text-align:center;}
+  .onglets{display:flex;gap:8px;margin-bottom:16px;justify-content:center;}
+  .onglet{padding:9px 18px;border-radius:10px;border:2px solid rgba(255,207,51,.3);background:transparent;color:#fff;
+    cursor:pointer;font-family:inherit;font-weight:700;font-size:14px;}
+  .onglet.actif{background:var(--or);color:#3a2600;border-color:var(--or);}
+  .panneau{display:none;}
+  .panneau.actif{display:block;}
+  .modale textarea{
+    width:100%;min-height:200px;background:#0b1020;color:#fff;border:2px solid rgba(255,255,255,.2);
+    border-radius:12px;padding:12px;font-family:'Consolas',monospace;font-size:14px;resize:vertical;line-height:1.6;
+  }
+  .modale textarea:focus{outline:none;border-color:var(--or);}
+  .modale .format{font-size:12px;opacity:.65;margin:8px 0 4px;}
+  .modale-actions{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+
+  .footer-note{position:fixed;left:0;right:0;bottom:2px;text-align:center;font-size:10px;opacity:.28;pointer-events:none;z-index:1;}
+
+  /* ---------- Écrans étroits / portrait : on réempile et on autorise le défilement ---------- */
+  @media (max-width:900px){
+    body{height:auto;min-height:100vh;overflow:auto;}
+    .entete{grid-template-columns:1fr;justify-items:center;gap:8px;}
+    .entete-titres{grid-column:1;}
+    .barre-haut{grid-column:1;justify-self:center;flex-wrap:wrap;justify-content:center;}
+    .scene{flex-direction:column;align-items:center;}
+    .col-roue,.col-plateau{height:auto;width:100%;}
+    .col-plateau{max-width:640px;}
+    .roue-zone{width:min(440px,86vw);height:min(440px,86vw);}
+    .footer-note{position:static;margin-top:16px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="entete">
+  <div class="entete-titres">
+    <h1>La Roue de la Torture</h1>
+    <div class="sous-titre">Jeu de plateau télévisé</div>
+  </div>
+  <div class="barre-haut">
+    <button id="btnEleves" class="btn-icone cache">📱 Élèves</button>
+    <button id="btnMusique" class="btn-icone">🔊 Musique : OFF</button>
+    <button id="btnReglages" class="btn-icone">⚙️ Réglages</button>
+  </div>
+</div>
+<div id="mancheInfo" style="text-align:center;color:#fff;font-weight:800;letter-spacing:2px;margin:0 auto 8px;font-size:15px;background:rgba(255,207,51,.14);border:1px solid rgba(255,207,51,.4);border-radius:20px;padding:4px 16px;width:max-content;">Manche 1 / 3</div>
+
+<div class="layout">
+
+  <!-- ============ RANGÉE DES 4 CANDIDATS ============ -->
+  <div class="barre-joueurs" id="barreJoueurs"></div>
+
+  <!-- ============ SCÈNE : ROUE (gauche) + PLATEAU (droite) ============ -->
+  <div class="scene">
+
+    <!-- Colonne gauche : la roue -->
+    <div class="col-roue">
+      <div class="roue-zone">
+        <div class="fleche"></div>
+        <canvas id="roue" width="560" height="560"></canvas>
+        <div class="moyeu">⭐</div>
+      </div>
+      <div id="resultatRoue" class="resultat-roue"></div>
+      <div id="chrono" class="chrono cache">⏱ <span id="chronoNum">20</span><small>s</small></div>
+      <button id="btnTourner" class="btn btn-tourner">Tourner la roue</button>
+    </div>
+
+    <!-- Colonne droite : plateau, clavier, consignes, actions -->
+    <div class="col-plateau">
+      <div class="plateau-bloc">
+        <div class="categorie" id="categorie">Catégorie</div>
+        <div class="grille" id="grille"></div>
+        <div class="clavier" id="clavier"></div>
+      </div>
+
+      <div id="consigne" class="consigne">Cliquez sur « Tourner la roue » pour commencer.</div>
+
+      <div class="barre-actions">
+        <button id="btnVoyelle" class="btn btn-violet btn-sec">Acheter une voyelle (250)</button>
+        <button id="btnDeviner" class="btn btn-vert btn-sec">Proposer le mot complet</button>
+        <button id="btnNouvelle" class="btn btn-sec">Nouvelle manche</button>
+      </div>
+
+      <div id="zoneDevine" class="zone-devine cache">
+        <input id="inputDevine" type="text" placeholder="Tapez le mot complet…" autocomplete="off">
+        <button id="btnValiderDevine" class="btn btn-vert btn-sec">Valider</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer-note">Astuce projection : plein écran avec F11. Noms modifiables en cliquant dessus. Réglages ⚙️ pour vos énigmes et les montants de la roue.</div>
+
+<!-- OVERLAY VICTOIRE -->
+<div class="overlay" id="overlay">
+  <div class="carte-victoire">
+    <h2>🏆 Manche gagnée !</h2>
+    <div class="gagnant" id="vGagnant">—</div>
+    <div class="gain" id="vGain"></div>
+    <button class="btn btn-tourner" id="btnRejouer">Manche suivante</button>
+  </div>
+</div>
+
+<!-- OVERLAY FIN DES 3 MANCHES -> LANCEMENT DE LA FINALE -->
+<div class="overlay" id="overlayFinale">
+  <div class="carte-victoire">
+    <h2>🏁 Fin des 3 manches</h2>
+    <div class="gagnant" id="fClassement" style="font-size:20px;">—</div>
+    <div class="gain" id="fAnnonce" style="font-size:19px;"></div>
+    <button class="btn btn-tourner" id="btnLancerFinale">Lancer la finale</button>
+  </div>
+</div>
+
+<!-- OVERLAY VAINQUEUR DU JEU (après la finale) -->
+<div class="overlay" id="overlayPartie">
+  <div class="carte-victoire">
+    <h2>🏆 Vainqueur du jeu</h2>
+    <div class="gagnant" id="pGagnant">—</div>
+    <div class="gain" id="pClassement" style="font-size:18px;"></div>
+    <button class="btn btn-tourner" id="btnNouvellePartie">Nouvelle partie</button>
+  </div>
+</div>
+
+<!-- MODALE RÉGLAGES -->
+<div class="overlay" id="overlayReglages">
+  <div class="modale">
+    <h2>⚙️ Réglages du jeu</h2>
+    <div class="aide">Personnalisez les énigmes et les montants de la roue.</div>
+    <div class="onglets">
+      <button class="onglet actif" data-panneau="pEnigmes">📝 Énigmes</button>
+      <button class="onglet" data-panneau="pRoue">🎡 Roue</button>
+    </div>
+
+    <div class="panneau actif" id="pEnigmes">
+      <div class="format">Une énigme par ligne, au format : <b>Énigme (indice affiché) | RÉPONSE (mot à deviner)</b><br>
+        Exemple : <i>Règlement européen sur les temps de conduite | RSE 561/2006</i></div>
+      <textarea id="txtEnigmes" placeholder="Votre indice ici | VOTRE REPONSE ICI"></textarea>
+    </div>
+
+    <div class="panneau" id="pRoue">
+      <div class="format">Un segment par ligne, au format : <b>type | valeur</b><br>
+        types possibles : <b>somme</b> (points gagnés) · <b>banqueroute</b> · <b>holdup</b> · <b>passe</b> (passe ton tour : le joueur cède la main sans proposer de lettre) · <b>diviseur</b> (trouvez une lettre puis divisez par N la cagnotte d'un adversaire ; la valeur = N, ex. <i>diviseur | 2</i>)</div>
+      <textarea id="txtRoue"></textarea>
+    </div>
+
+    <div class="modale-actions">
+      <button class="btn btn-vert btn-sec" id="btnAppliquerReglages">Appliquer</button>
+      <button class="btn btn-rouge btn-sec" id="btnFermerReglages">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE AVATAR -->
+<div class="overlay" id="overlayAvatar">
+  <div class="modale" style="max-width:520px;">
+    <h2>🧑 Choisir un avatar</h2>
+    <div class="aide" id="avatarPourQui">Candidat</div>
+    <div class="format" style="text-align:center;">Pour un rendu <b>ultra réaliste</b>, importez une vraie photo du candidat. Sinon, choisissez une pastille ci-dessous.</div>
+    <div style="text-align:center;margin:16px 0;">
+      <label class="btn btn-vert btn-sec" style="cursor:pointer;display:inline-block;">📷 Importer une photo
+        <input type="file" id="inputPhoto" accept="image/*" style="display:none;">
+      </label>
+    </div>
+    <div class="grille-avatars" id="grilleAvatars"></div>
+    <div class="modale-actions">
+      <button class="btn btn-rouge btn-sec" id="btnAvatarDefaut">Pastille de couleur</button>
+      <button class="btn btn-sec" id="btnFermerAvatar">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE CONNEXION ÉLÈVES -->
+<div class="overlay" id="overlayEleves">
+  <div class="modale" style="max-width:560px;text-align:center;">
+    <h2>📱 Connexion des candidats</h2>
+    <div class="aide">Chaque candidat scanne le QR code (ou tape l'adresse) sur son téléphone.</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;justify-content:center;margin:12px 0;">
+      <div style="background:#fff;padding:10px;border-radius:14px;">
+        <img id="qrEleves" width="200" height="200" alt="QR code" style="display:block;">
+      </div>
+      <div style="text-align:left;min-width:200px;">
+        <div style="font-size:13px;opacity:.7;text-transform:uppercase;letter-spacing:1px;">Adresse</div>
+        <div id="urlEleves" style="font-size:16px;font-weight:700;color:var(--or);word-break:break-all;margin-bottom:12px;">…</div>
+        <div style="font-size:13px;opacity:.7;text-transform:uppercase;letter-spacing:1px;">Code du salon</div>
+        <div id="codeEleves" style="font-size:44px;font-weight:900;letter-spacing:8px;color:#fff;">····</div>
+      </div>
+    </div>
+    <div class="format">Le candidat choisit son numéro (1, 2, 3 ou 4). Seul celui <b>dont c'est le tour</b> pourra lancer la roue depuis son téléphone.</div>
+    <div class="modale-actions">
+      <button class="btn btn-sec" id="btnFermerEleves">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confettis" style="position:fixed;inset:0;pointer-events:none;z-index:60;display:none;"></canvas>
+
+<!-- Socket.io (présent uniquement si le jeu est lancé via le serveur Node) -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Liste facultative de vos avatars images (dossier avatars/). Absente = pas grave. -->
+<script src="avatars/liste.js" onerror="window.AVATARS_FICHIERS=window.AVATARS_FICHIERS||[]"></script>
+
+<script>
+/* =========================================================
+   LA ROUE DE LA FORTUNE
+   ========================================================= */
+
+/* ---------- Joueurs ---------- */
+const COULEURS = ['#2d6bd4', '#d9264a', '#1faa59', '#e0a400'];
+const joueurs = [
+  { nom:'Candidat 1', score:0, total:0, couleur:COULEURS[0], avatar:null },
+  { nom:'Candidat 2', score:0, total:0, couleur:COULEURS[1], avatar:null },
+  { nom:'Candidat 3', score:0, total:0, couleur:COULEURS[2], avatar:null },
+  { nom:'Candidat 4', score:0, total:0, couleur:COULEURS[3], avatar:null },
+];
+let joueurActif = 0;
+const COUT_VOYELLE = 250;
+const BONUS_MOT   = 1000;   // le candidat qui propose le mot complet et trouve la bonne réponse gagne ce bonus
+
+/* ---------- Énigmes (modifiables dans les réglages) ---------- */
+let ENIGMES = [
+  { enonce:'Document de bord en transport de voyageurs occasionnel',        mot:'LA FEUILLE DE ROUTE' },
+  { enonce:'Sigle du poids total autorisé en charge',                       mot:'PTAC' },
+  { enonce:'Zone urbaine interdite aux véhicules les plus polluants',       mot:'LA ZONE A FAIBLES EMISSIONS' },
+  { enonce:'Permis obligatoire pour conduire un autocar',                   mot:'LE PERMIS D' },
+  { enonce:'Permis obligatoire pour conduire un camion',                    mot:'LE PERMIS C' },
+  { enonce:'Vitesse maximale d’un poids lourd sur autoroute',              mot:'QUATRE VINGT DIX' },
+  { enonce:'Repos hebdomadaire normal minimum',                            mot:'QUARANTE CINQ HEURES' },
+  { enonce:'Assurance obligatoire pour circuler',                          mot:'LA RESPONSABILITE CIVILE' },
+  { enonce:'Distance à respecter entre deux véhicules',                    mot:'LA DISTANCE DE SECURITE' },
+  { enonce:'Manière de conduire pour réduire la consommation',            mot:'LA CONDUITE ECONOMIQUE' },
+  { enonce:'Aménagement pour se reposer le long de l’autoroute',          mot:'UNE AIRE DE REPOS' },
+  { enonce:'Document qui matérialise le contrat de transport de marchandises', mot:'LA LETTRE DE VOITURE' },
+];
+
+/* ---------- Palette vive : chaque segment a une couleur pleine ---------- */
+const PALETTE = ['#2d6bd4','#1faa59','#e0a400','#5b2a86','#e8631a','#0f9bb0','#c81d6b','#7cb518'];
+/* Segments (modifiables dans les réglages). Les couleurs sont attribuées automatiquement. */
+let SEGMENTS_DEF = [
+  { type:'somme', val:250 },
+  { type:'somme', val:500 },
+  { type:'passe', val:0 },
+  { type:'banqueroute', val:0 },
+  { type:'somme', val:300 },
+  { type:'holdup', val:400 },
+  { type:'somme', val:150 },
+  { type:'somme', val:800 },
+  { type:'banqueroute', val:0 },
+  { type:'diviseur', val:2 },
+  { type:'somme', val:400 },
+  { type:'holdup', val:600 },
+  { type:'somme', val:350 },
+  { type:'somme', val:1000 },
+];
+let SEGMENTS = [];
+
+function construireSegments(){
+  let ci = 0;
+  SEGMENTS = SEGMENTS_DEF.map(s=>{
+    let couleur, txt;
+    if(s.type==='banqueroute'){ couleur='#0a0a0a'; txt='BANQUEROUTE'; }
+    else if(s.type==='holdup'){ couleur='#d4ff00'; txt='HOLD-UP'; }
+    else if(s.type==='diviseur'){ couleur='#6a1b9a'; txt='÷'+(s.val||2); }
+    else if(s.type==='passe'){ couleur='#455a64'; txt='PASSE'; }
+    else { couleur=PALETTE[ci % PALETTE.length]; ci++; txt=String(s.val); }
+    return { txt, val:s.val, type:s.type, couleur };
+  });
+  N = SEGMENTS.length;
+  ANGLE = 2*Math.PI/N;
+}
+
+/* ---------- État de la manche ---------- */
+let enigme = null, valeurCourante = 0;
+let modeHoldUp = false, modeAchatVoyelle = false, modeDiviseur = false;
+let peutJouerLettre = false, rouePeutTourner = true, segCourant = null;
+const VOYELLES = new Set(['A','E','I','O','U','Y']);
+
+/* ---------- DOM ---------- */
+const canvas = document.getElementById('roue');
+const ctx = canvas.getContext('2d');
+const elResultat = document.getElementById('resultatRoue');
+const elConsigne = document.getElementById('consigne');
+const elGrille = document.getElementById('grille');
+const elClavier = document.getElementById('clavier');
+const elCategorie = document.getElementById('categorie');
+const btnTourner = document.getElementById('btnTourner');
+const btnVoyelle = document.getElementById('btnVoyelle');
+
+/* =========================================================
+   ROUE — dessin
+   ========================================================= */
+let N, ANGLE, rotationActuelle = 0;
+
+function dessinerRoue(){
+  const size = canvas.width, r = size/2, hub = 52;
+  ctx.clearRect(0,0,size,size);
+  for(let i=0;i<N;i++){
+    const a0 = i*ANGLE - Math.PI/2 - ANGLE/2;
+    const a1 = a0 + ANGLE;
+    ctx.beginPath();
+    ctx.moveTo(r,r);
+    ctx.arc(r,r,r-6,a0,a1);
+    ctx.closePath();
+    ctx.fillStyle = SEGMENTS[i].couleur;
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.45)';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    // texte : suit le rayon du quartier, toujours à l'endroit, ajusté pour tenir
+    const label = SEGMENTS[i].txt;
+    const R = r - 16;                     // bord extérieur du texte
+    const dispo = R - hub;                // largeur radiale disponible
+    const ang = i*ANGLE - Math.PI/2;      // bisecteur du segment (direction du texte)
+    let fs = label.length>4 ? 22 : 32;
+    ctx.save();
+    ctx.translate(r,r);
+    ctx.rotate(ang);
+    ctx.textBaseline='middle';
+    ctx.lineJoin='round';
+    ctx.font = `bold ${fs}px Segoe UI`;
+    while(ctx.measureText(label).width > dispo && fs > 8){ fs--; ctx.font = `bold ${fs}px Segoe UI`; }
+    ctx.lineWidth = Math.max(2, fs/7);
+    ctx.strokeStyle = 'rgba(0,0,0,.65)';
+    ctx.fillStyle = '#fff';
+    const deg = ((ang*180/Math.PI)%360 + 360) % 360;
+    if(deg > 90 && deg < 270){           // moitié gauche : on retourne pour rester lisible
+      ctx.rotate(Math.PI);
+      ctx.textAlign='left';
+      ctx.strokeText(label, -R, 0);
+      ctx.fillText(label, -R, 0);
+    }else{
+      ctx.textAlign='right';
+      ctx.strokeText(label, R, 0);
+      ctx.fillText(label, R, 0);
+    }
+    ctx.restore();
+  }
+  // liseré central
+  ctx.beginPath();ctx.arc(r,r,r-6,0,2*Math.PI);ctx.strokeStyle='rgba(255,207,51,.7)';ctx.lineWidth=5;ctx.stroke();
+}
+
+/* =========================================================
+   ROUE — rotation
+   ========================================================= */
+function tournerRoue(){
+  if(!rouePeutTourner) return;
+  arreterChrono();
+  demarrerAudioSiBesoin();
+  rouePeutTourner = false; peutJouerLettre = false;
+  btnTourner.disabled = true;
+  elResultat.textContent=''; elResultat.style.background='transparent';
+
+  const gagnant = Math.floor(Math.random()*N);
+  const tours = 5 + Math.floor(Math.random()*3);
+  const pas = 360/N;
+  // Angle absolu (mod 360) qui amène le bisecteur du segment gagnant sous le repère (haut).
+  const cibleMod = ((360 - gagnant*pas) % 360 + 360) % 360;
+  // Angle absolu courant de la roue (rotationActuelle s'accumule d'un tour à l'autre).
+  const actuelMod = ((rotationActuelle % 360) + 360) % 360;
+  // Delta minimal pour retomber pile, + plusieurs tours complets pour l'effet.
+  const delta = (cibleMod - actuelMod + 360) % 360;
+  rotationActuelle += tours*360 + delta;
+  canvas.style.transform = `rotate(${rotationActuelle}deg)`;
+  jouerTicsRoue();
+  setTimeout(()=> resultatRoue(gagnant), 5100);
+}
+
+function resultatRoue(i){
+  const seg = SEGMENTS[i];
+  segCourant = seg;
+  if(seg.type==='banqueroute'){
+    sfxBanqueroute();
+    elResultat.textContent='💥 BANQUEROUTE !';
+    elResultat.style.background='rgba(217,38,74,.25)';
+    joueurs[joueurActif].score = 0; majJoueurs();
+    setConsigne(`${joueurs[joueurActif].nom} perd toute sa cagnotte de la manche…`, '');
+    setTimeout(()=>{ tourSuivant(); reactiverRoue(); }, 1700);
+    return;
+  }
+  if(seg.type==='passe'){
+    sfxMauvais();
+    elResultat.textContent='⏭️ PASSE TON TOUR';
+    elResultat.style.background='rgba(69,90,100,.35)';
+    peutJouerLettre = false;
+    setConsigne(`${joueurs[joueurActif].nom} tombe sur « Passe ton tour » : la main passe au joueur suivant, sans proposer de lettre.`, '');
+    setTimeout(()=>{ tourSuivant(); reactiverRoue(); }, 1700);
+    return;
+  }
+  if(seg.type==='diviseur'){
+    sfxHoldup();
+    valeurCourante = 0;                 // les lettres révèlent le mot mais ne rapportent pas de points ; le pouvoir = diviser un adversaire
+    const d = seg.val || 2;
+    elResultat.textContent = `➗ DIVISEUR ÷${d}`;
+    elResultat.style.background='rgba(106,27,154,.3)';
+    setConsigne(`DIVISEUR ÷${d} ! ${joueurs[joueurActif].nom}, trouvez une bonne lettre : vous pourrez DIVISER par ${d} la cagnotte d'un adversaire.`, 'holdup');
+    peutJouerLettre = true;
+    reactiverRoue(false);
+    demarrerChrono(tempsEcouleLettre);
+    return;
+  }
+  valeurCourante = seg.val;
+  if(seg.type==='holdup'){
+    sfxHoldup();
+    elResultat.textContent = `🎯 HOLD-UP (${seg.val} pts)`;
+    elResultat.style.background='rgba(217,38,74,.25)';
+    setConsigne(`HOLD-UP ! ${joueurs[joueurActif].nom}, trouvez une bonne lettre : vous pourrez VOLER les points d'un adversaire.`, 'holdup');
+  }else{
+    sfxSomme();
+    elResultat.textContent = `💰 ${seg.val} points`;
+    elResultat.style.background='rgba(255,207,51,.2)';
+    setConsigne(`${joueurs[joueurActif].nom}, proposez une lettre sur le clavier.`, 'action');
+  }
+  peutJouerLettre = true;
+  reactiverRoue(false);
+  demarrerChrono(tempsEcouleLettre);
+}
+
+function reactiverRoue(activer=true){
+  rouePeutTourner = activer;
+  btnTourner.disabled = !activer;
+}
+
+/* =========================================================
+   CHRONOMÈTRE DE RÉPONSE (20 s par candidat)
+   Démarre dès qu'un candidat doit AGIR (proposer une lettre, une voyelle,
+   le mot, ou choisir sa victime au Hold-Up). À 0 → on passe au suivant.
+   ========================================================= */
+const DUREE_REPONSE = 20;
+const elChrono = document.getElementById('chrono');
+const elChronoNum = document.getElementById('chronoNum');
+let chronoTimer = null, chronoReste = 0;
+
+function afficherChrono(){
+  elChronoNum.textContent = chronoReste;
+  elChrono.classList.toggle('urgent', chronoReste <= 6);
+}
+function demarrerChrono(surExpiration){
+  arreterChrono();
+  chronoReste = DUREE_REPONSE;
+  elChrono.classList.remove('cache');
+  afficherChrono();
+  chronoTimer = setInterval(()=>{
+    chronoReste--;
+    afficherChrono();
+    if(chronoReste <= 5 && chronoReste > 0) bip([1100],0.05,'square',0.16); // tic-tac final
+    if(chronoReste <= 0){ arreterChrono(); if(typeof surExpiration==='function') surExpiration(); }
+  }, 1000);
+}
+function arreterChrono(){
+  if(chronoTimer){ clearInterval(chronoTimer); chronoTimer = null; }
+  elChrono.classList.add('cache');
+  elChrono.classList.remove('urgent');
+}
+
+/* Fin de temps — selon la phase, on rend la main au joueur suivant */
+function tempsEcouleLettre(){
+  peutJouerLettre = false;
+  sfxMauvais();
+  setConsigne(`⏱ Temps écoulé ! ${joueurs[joueurActif].nom} n'a pas répondu à temps. Au joueur suivant.`, '');
+  setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
+}
+function tempsEcouleVoyelle(){
+  modeAchatVoyelle = false;
+  document.querySelectorAll('.touche.dispo-voyelle').forEach(t=>t.classList.remove('dispo-voyelle'));
+  sfxMauvais();
+  setConsigne(`⏱ Temps écoulé ! Voyelle non choisie à temps. Au joueur suivant.`, '');
+  setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
+}
+function tempsEcouleHoldup(){
+  modeHoldUp = false;
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  sfxMauvais();
+  setConsigne(`⏱ Temps écoulé ! Hold-up annulé. ${joueurs[joueurActif].nom} rejoue : tournez la roue.`, 'action');
+  reactiverRoue(true);
+}
+
+/* =========================================================
+   PLATEAU
+   ========================================================= */
+let mancheIndex = 0;
+let mancheEnCours = 1;               // n° de la manche dans la partie en cours (1..3)
+const MANCHES_PAR_PARTIE = 3;        // une partie dure 3 manches au maximum
+let phase = 'manches';               // 'manches' (les 3 manches) puis 'finale' (2 meilleurs)
+let elimines = [];                   // index des candidats éliminés pour la finale
+let finalistes = [];                 // index des 2 finalistes
+
+function chargerEnigme(idx){
+  if(ENIGMES.length===0) return;
+  enigme = ENIGMES[idx % ENIGMES.length];
+  elCategorie.textContent = '💡 ' + enigme.enonce;
+  construireGrille();
+  construireClavier();
+}
+
+function construireGrille(){
+  elGrille.innerHTML='';
+  enigme.mot.split(' ').forEach(mot=>{
+    const wrap = document.createElement('div');
+    wrap.className='mot';
+    [...mot].forEach(ch=>{
+      const c = document.createElement('div');
+      if(/[A-Z]/.test(ch)){ c.className='case lettre'; c.dataset.lettre = ch; }
+      else { c.className='case fixe'; c.textContent = ch; } // chiffres, / , - … affichés d'emblée
+      wrap.appendChild(c);
+    });
+    elGrille.appendChild(wrap);
+  });
+}
+
+function revelerLettre(lettre){
+  let compte=0;
+  document.querySelectorAll('.case.lettre').forEach(c=>{
+    if(c.dataset.lettre===lettre && !c.classList.contains('revelee')){
+      c.classList.add('revelee'); c.textContent=lettre; compte++;
+    }
+  });
+  return compte;
+}
+function motCompletTrouve(){
+  return [...document.querySelectorAll('.case.lettre')].every(c=>c.classList.contains('revelee'));
+}
+
+/* =========================================================
+   CLAVIER
+   ========================================================= */
+function construireClavier(){
+  elClavier.innerHTML='';
+  'AZERTYUIOPQSDFGHJKLMWXCVBN'.split('').forEach(l=>{
+    const b = document.createElement('button');
+    b.className='touche' + (VOYELLES.has(l)?' voyelle':'');
+    b.textContent=l; b.dataset.lettre=l;
+    b.onclick = ()=> jouerLettre(l,b);
+    elClavier.appendChild(b);
+  });
+}
+
+function jouerLettre(lettre, bouton){
+  /* --- Achat de voyelle --- */
+  if(modeAchatVoyelle){
+    if(!VOYELLES.has(lettre)){ setConsigne('Choisissez une VOYELLE (A, E, I, O, U, Y).', 'action'); return; }
+    arreterChrono();
+    modeAchatVoyelle = false;
+    document.querySelectorAll('.touche.dispo-voyelle').forEach(t=>t.classList.remove('dispo-voyelle'));
+    bouton.disabled = true;
+    joueurs[joueurActif].score -= COUT_VOYELLE;
+    const nb = revelerLettre(lettre);
+    majJoueurs();
+    if(nb>0){
+      bouton.classList.add('ok'); sfxBon();
+      if(motCompletTrouve()){ setTimeout(gagnerManche,500); return; }
+      setConsigne(`✅ Voyelle « ${lettre} » achetée (${nb} trouvée·s). ${joueurs[joueurActif].nom} continue : tournez la roue.`, 'action');
+    }else{
+      bouton.classList.add('ko'); sfxMauvais();
+      setConsigne(`❌ Pas de « ${lettre} » dans le mot. -${COUT_VOYELLE} pts quand même. Au joueur suivant.`, '');
+      setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1400);
+      return;
+    }
+    reactiverRoue(true);
+    return;
+  }
+
+  /* --- Lettre normale (après un tour de roue) --- */
+  if(!peutJouerLettre){
+    setConsigne('⏳ Tournez d’abord la roue avant de choisir une lettre !', '');
+    return;
+  }
+  peutJouerLettre = false;
+  arreterChrono();
+  bouton.disabled = true;
+  const nb = revelerLettre(lettre);
+  if(nb>0){
+    bouton.classList.add('ok'); sfxBon();
+    const gain = valeurCourante*nb;
+    joueurs[joueurActif].score += gain;
+    majJoueurs();
+    if(motCompletTrouve()){ setTimeout(gagnerManche,500); return; }
+    if(segCourant && segCourant.type==='holdup'){ lancerHoldUp(); }
+    else if(segCourant && segCourant.type==='diviseur'){ lancerDiviseur(); }
+    else{
+      setConsigne(`✅ ${nb} × « ${lettre} » ! +${gain} points. ${joueurs[joueurActif].nom} rejoue : tournez la roue.`, 'action');
+      reactiverRoue(true);
+    }
+  }else{
+    bouton.classList.add('ko'); sfxMauvais();
+    setConsigne(`❌ Pas de « ${lettre} ». Au joueur suivant.`, '');
+    setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1200);
+  }
+}
+
+/* =========================================================
+   ACHAT DE VOYELLE
+   ========================================================= */
+btnVoyelle.onclick = ()=>{
+  if(modeHoldUp || modeAchatVoyelle || modeDiviseur) return;
+  if(joueurs[joueurActif].score < COUT_VOYELLE){
+    setConsigne(`💸 ${joueurs[joueurActif].nom} n’a pas ${COUT_VOYELLE} points pour acheter une voyelle.`, '');
+    return;
+  }
+  demarrerAudioSiBesoin();
+  modeAchatVoyelle = true; peutJouerLettre = false;
+  reactiverRoue(false);
+  demarrerChrono(tempsEcouleVoyelle);
+  // met en surbrillance les voyelles encore disponibles
+  document.querySelectorAll('.touche.voyelle').forEach(t=>{ if(!t.disabled) t.classList.add('dispo-voyelle'); });
+  setConsigne(`${joueurs[joueurActif].nom} achète une voyelle (-${COUT_VOYELLE} pts). Cliquez la voyelle voulue.`, 'action');
+};
+
+/* =========================================================
+   HOLD-UP
+   ========================================================= */
+function lancerHoldUp(){
+  const cibles = joueurs.map((j,i)=>({j,i})).filter(o=> o.i!==joueurActif && o.j.score>0);
+  if(cibles.length===0){
+    setConsigne('Aucun adversaire n’a de points à voler. Vous rejouez : tournez la roue.', 'action');
+    reactiverRoue(true); return;
+  }
+  modeHoldUp = true; reactiverRoue(false);
+  setConsigne(`🎯 HOLD-UP ! ${joueurs[joueurActif].nom}, CLIQUEZ sur la cagnotte d’un adversaire pour lui voler ses points !`, 'holdup');
+  cibles.forEach(o=> document.querySelector(`.joueur[data-index="${o.i}"]`).classList.add('cible'));
+  demarrerChrono(tempsEcouleHoldup);
+}
+
+function volerPoints(indexCible){
+  if(!modeHoldUp) return;
+  arreterChrono();
+  const voleur = joueurs[joueurActif], victime = joueurs[indexCible];
+  const butin = victime.score;
+  victime.score = 0; voleur.score += butin; modeHoldUp = false;
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  majJoueurs(); sfxVol();
+  setConsigne(`💰 ${voleur.nom} a dévalisé ${victime.nom} et empoche ${butin} points ! Tournez la roue.`, 'action');
+  reactiverRoue(true);
+}
+
+/* =========================================================
+   DIVISEUR (÷N) — même principe que le Hold-Up : après une bonne
+   lettre, le joueur divise par N la cagnotte d'un adversaire.
+   ========================================================= */
+function lancerDiviseur(){
+  const d = (segCourant && segCourant.val) || 2;
+  const cibles = joueurs.map((j,i)=>({j,i})).filter(o=> o.i!==joueurActif && o.j.score>0);
+  if(cibles.length===0){
+    setConsigne(`Aucun adversaire n'a de points à diviser. Vous rejouez : tournez la roue.`, 'action');
+    reactiverRoue(true); return;
+  }
+  modeDiviseur = true; reactiverRoue(false);
+  setConsigne(`➗ DIVISEUR ÷${d} ! ${joueurs[joueurActif].nom}, CLIQUEZ sur la cagnotte d'un adversaire pour la diviser par ${d} !`, 'holdup');
+  cibles.forEach(o=> document.querySelector(`.joueur[data-index="${o.i}"]`).classList.add('cible'));
+  demarrerChrono(tempsEcouleDiviseur);
+}
+function diviserPoints(indexCible){
+  if(!modeDiviseur) return;
+  arreterChrono();
+  const d = (segCourant && segCourant.val) || 2;
+  const victime = joueurs[indexCible];
+  const avant = victime.score;
+  victime.score = Math.floor(avant / d);
+  modeDiviseur = false;
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  majJoueurs(); sfxBanqueroute();
+  setConsigne(`➗ ${joueurs[joueurActif].nom} a divisé la cagnotte de ${victime.nom} par ${d} (${avant} → ${victime.score}) ! Tournez la roue.`, 'action');
+  reactiverRoue(true);
+}
+function tempsEcouleDiviseur(){
+  modeDiviseur = false;
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  sfxMauvais();
+  setConsigne(`⏱ Temps écoulé ! Division annulée. ${joueurs[joueurActif].nom} rejoue : tournez la roue.`, 'action');
+  reactiverRoue(true);
+}
+
+/* =========================================================
+   TOURS
+   ========================================================= */
+function tourSuivant(){
+  arreterChrono();
+  modeHoldUp = false; modeAchatVoyelle = false; modeDiviseur = false;
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  document.querySelectorAll('.touche.dispo-voyelle').forEach(t=>t.classList.remove('dispo-voyelle'));
+  joueurActif = (joueurActif+1)%joueurs.length;
+  if(phase==='finale'){ let g=0; while(elimines.includes(joueurActif) && g++<joueurs.length) joueurActif=(joueurActif+1)%joueurs.length; }
+  majJoueurs();
+}
+function setConsigne(txt,type){ elConsigne.textContent=txt; elConsigne.className='consigne'+(type?' '+type:''); }
+
+/* =========================================================
+   PROPOSER LE MOT
+   ========================================================= */
+const zoneDevine = document.getElementById('zoneDevine');
+const inputDevine = document.getElementById('inputDevine');
+document.getElementById('btnDeviner').onclick = ()=>{
+  if(modeHoldUp || modeDiviseur) return;
+  zoneDevine.classList.toggle('cache');
+  if(!zoneDevine.classList.contains('cache')){ inputDevine.value=''; inputDevine.focus(); }
+};
+document.getElementById('btnValiderDevine').onclick = validerMot;
+inputDevine.addEventListener('keydown', e=>{ if(e.key==='Enter') validerMot(); });
+
+function normaliser(s){
+  return s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Z]/g,'');
+}
+function validerMot(){
+  const prop = normaliser(inputDevine.value), cible = normaliser(enigme.mot);
+  if(!prop) return;
+  arreterChrono();
+  if(prop===cible){
+    document.querySelectorAll('.case.lettre').forEach(c=>{c.classList.add('revelee');c.textContent=c.dataset.lettre;});
+    joueurs[joueurActif].score += BONUS_MOT;   // bonus : trouver le mot complet rapporte 1000 points
+    majJoueurs(); zoneDevine.classList.add('cache'); gagnerManche();
+  }else{
+    zoneDevine.classList.add('cache'); sfxMauvais();
+    setConsigne(`❌ « ${inputDevine.value} » n’est pas le bon mot. Au joueur suivant.`, '');
+    setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1400);
+  }
+}
+
+/* =========================================================
+   FIN DE MANCHE
+   ========================================================= */
+function gagnerManche(){
+  arreterChrono();
+  rouePeutTourner=false; peutJouerLettre=false; modeAchatVoyelle=false; modeHoldUp=false; modeDiviseur=false; btnTourner.disabled=true;
+  const g = joueurs[joueurActif];
+  g.total += g.score; // cumul classique : le gagnant encaisse sa cagnotte dans son total
+  majJoueurs();
+  if(phase==='finale'){ finVainqueur(g); return; }   // en finale, trouver le mot = gagner le jeu
+  // Les perdants CONSERVENT leur total déjà acquis ; ils perdent seulement leur cagnotte de la manche en cours.
+  const derniere = mancheEnCours >= MANCHES_PAR_PARTIE;
+  document.getElementById('vGagnant').textContent='🎉 '+g.nom;
+  document.getElementById('vGain').textContent=`Manche ${mancheEnCours}/${MANCHES_PAR_PARTIE} remportée · +${g.score} pts · Total : ${g.total} pts`;
+  const btnR = document.getElementById('btnRejouer');
+  btnR.textContent = derniere ? '🏁 Qualification & finale' : 'Manche suivante';
+  document.getElementById('overlay').classList.add('on');
+  sfxVictoire(); lancerConfettis();
+}
+document.getElementById('btnRejouer').onclick = ()=>{
+  document.getElementById('overlay').classList.remove('on'); arreterConfettis();
+  if(mancheEnCours >= MANCHES_PAR_PARTIE){
+    finDesManches();
+  }else{
+    mancheEnCours++; majMancheInfo(); nouvelleManche();
+  }
+};
+
+/* =========================================================
+   INDICATEUR DE MANCHE + FINALE (élimination du dernier, les 2 meilleurs s'affrontent)
+   ========================================================= */
+function majMancheInfo(){
+  const el = document.getElementById('mancheInfo');
+  if(!el) return;
+  el.textContent = phase==='finale' ? '🏁 FINALE' : `Manche ${mancheEnCours} / ${MANCHES_PAR_PARTIE}`;
+}
+function finDesManches(){
+  arreterChrono();
+  rouePeutTourner=false; peutJouerLettre=false; btnTourner.disabled=true;
+  // Classement par total ; le dernier est éliminé, les 2 premiers vont en finale
+  const ordre = joueurs.map((j,i)=>({i,nom:j.nom,t:j.total})).sort((a,b)=> b.t-a.t);
+  finalistes = [ordre[0].i, ordre[1].i];
+  elimines = ordre.slice(2).map(o=> o.i);
+  document.getElementById('fClassement').textContent =
+    ordre.map((o,r)=> `${r+1}. ${o.nom} : ${o.t} pts`).join('   ·   ');
+  const nomsElimines = elimines.map(i=> joueurs[i].nom).join(', ');
+  document.getElementById('fAnnonce').innerHTML =
+    `🚫 <b>${nomsElimines}</b> ${elimines.length>1?'sont éliminés':'est éliminé'}.<br>🏁 Finale : <b>${joueurs[finalistes[0]].nom}</b> vs <b>${joueurs[finalistes[1]].nom}</b>`;
+  document.getElementById('overlayFinale').classList.add('on');
+  sfxVictoire();
+}
+function lancerFinale(){
+  document.getElementById('overlayFinale').classList.remove('on'); arreterConfettis();
+  phase = 'finale';
+  joueurs.forEach(j=> j.score=0);                    // cagnottes de manche remises à zéro pour la finale
+  elimines.forEach(i=>{
+    const carteE = document.querySelector(`.joueur[data-index="${i}"]`);
+    if(carteE) carteE.classList.add('elimine');
+  });
+  joueurActif = finalistes[0];                       // le mieux classé commence
+  mancheIndex++; chargerEnigme(mancheIndex);
+  valeurCourante=0; modeHoldUp=false; modeAchatVoyelle=false; modeDiviseur=false; peutJouerLettre=false; segCourant=null;
+  reactiverRoue(true);
+  elResultat.textContent=''; elResultat.style.background='transparent';
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  majMancheInfo();
+  setConsigne(`🏁 FINALE ! ${joueurs[finalistes[0]].nom} contre ${joueurs[finalistes[1]].nom}. Le premier à trouver le mot remporte le jeu. Tournez la roue.`, 'action');
+  majJoueurs();
+}
+document.getElementById('btnLancerFinale').onclick = lancerFinale;
+
+function finVainqueur(g){
+  arreterChrono();
+  rouePeutTourner=false; peutJouerLettre=false; btnTourner.disabled=true;
+  document.getElementById('pGagnant').textContent = '🏆 '+g.nom+' remporte le jeu !';
+  const classement = joueurs.map(j=>({n:j.nom,t:j.total}))
+    .sort((a,b)=> b.t-a.t)
+    .map((o,r)=> `${r+1}. ${o.n} : ${o.t} pts`).join('   ·   ');
+  document.getElementById('pClassement').textContent = classement;
+  document.getElementById('overlayPartie').classList.add('on');
+  sfxVictoire(); lancerConfettis();
+}
+function nouvellePartie(){
+  document.getElementById('overlayPartie').classList.remove('on');
+  document.getElementById('overlayFinale').classList.remove('on');
+  document.getElementById('overlay').classList.remove('on');
+  arreterConfettis();
+  joueurs.forEach(j=>{ j.score=0; j.total=0; });
+  phase='manches'; elimines=[]; finalistes=[];
+  document.querySelectorAll('.joueur.elimine').forEach(c=>c.classList.remove('elimine'));
+  mancheEnCours = 1; majMancheInfo();
+  nouvelleManche();
+  majJoueurs();
+}
+document.getElementById('btnNouvellePartie').onclick = nouvellePartie;
+document.getElementById('btnNouvelle').onclick = nouvelleManche;
+
+function nouvelleManche(){
+  arreterChrono();
+  mancheIndex++;
+  joueurs.forEach(j=> j.score=0); // remise à zéro des cagnottes de manche (les totaux restent)
+  chargerEnigme(mancheIndex);
+  valeurCourante=0; modeHoldUp=false; modeAchatVoyelle=false; modeDiviseur=false; peutJouerLettre=false; segCourant=null;
+  reactiverRoue(true);
+  elResultat.textContent=''; elResultat.style.background='transparent';
+  document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
+  setConsigne(`Nouvelle manche ! Au tour de ${joueurs[joueurActif].nom}. Tournez la roue.`, 'action');
+  majJoueurs();
+}
+
+/* =========================================================
+   RENDU JOUEURS
+   ========================================================= */
+function pionInner(j){
+  if(!j.avatar) return '';
+  if(j.avatar.type==='img') return `<img src="${j.avatar.val}" alt="">`;
+  if(j.avatar.type==='svg') return j.avatar.val;
+  if(j.avatar.type==='emoji') return `<span class="emo">${j.avatar.val}</span>`;
+  return '';
+}
+function pionFond(j){ return (j.avatar && (j.avatar.type==='img' || j.avatar.type==='svg')) ? 'transparent' : j.couleur; }
+
+function construireJoueurs(){
+  const cont = document.getElementById('barreJoueurs');
+  cont.innerHTML='';
+  joueurs.forEach((j,i)=>{
+    const carte = document.createElement('div');
+    carte.className='joueur'; carte.dataset.index=i;
+    carte.innerHTML = `
+      <div class="badge-tour">● À vous de jouer</div>
+      <div class="joueur-entete">
+        <div class="pion" data-index="${i}" title="Cliquez pour choisir un avatar" style="background:${pionFond(j)}">${pionInner(j)}</div>
+        <input class="nom-input" value="${j.nom}" maxlength="16" data-index="${i}">
+      </div>
+      <div class="cagnotte" id="score-${i}">${j.score}</div>
+      <div class="cagnotte-label">points (manche)</div>
+      <div class="total-general">Total : <b id="total-${i}">${j.total}</b></div>`;
+    carte.addEventListener('click', ()=>{
+      if(i!==joueurActif && carte.classList.contains('cible')){
+        if(modeHoldUp) volerPoints(i);
+        else if(modeDiviseur) diviserPoints(i);
+      }
+    });
+    cont.appendChild(carte);
+  });
+  document.querySelectorAll('.nom-input').forEach(inp=>{
+    inp.addEventListener('input', e=>{ joueurs[+e.target.dataset.index].nom = e.target.value || 'Candidat'; });
+    inp.addEventListener('click', e=> e.stopPropagation());
+  });
+  document.querySelectorAll('.pion').forEach(p=>{
+    p.addEventListener('click', e=>{ e.stopPropagation(); ouvrirAvatar(+p.dataset.index); });
+  });
+}
+function majAvatar(i){
+  const p = document.querySelector(`.pion[data-index="${i}"]`);
+  if(!p) return;
+  p.style.background = pionFond(joueurs[i]);
+  p.innerHTML = pionInner(joueurs[i]);
+}
+function majJoueurs(){
+  joueurs.forEach((j,i)=>{
+    const sc=document.getElementById('score-'+i); if(sc) sc.textContent=j.score;
+    const tt=document.getElementById('total-'+i); if(tt) tt.textContent=j.total;
+    const carte=document.querySelector(`.joueur[data-index="${i}"]`);
+    if(carte) carte.classList.toggle('actif', i===joueurActif);
+  });
+}
+
+/* =========================================================
+   AVATARS
+   ========================================================= */
+/* Avatars originaux façon « têtes rondes » (SVG, libres de droits, hors-ligne) */
+const _EYES = `<circle cx="37" cy="50" r="6.5" fill="#fff"/><circle cx="63" cy="50" r="6.5" fill="#fff"/><circle cx="38.5" cy="51" r="3.4" fill="#20140c"/><circle cx="61.5" cy="51" r="3.4" fill="#20140c"/><circle cx="40" cy="49" r="1.1" fill="#fff"/><circle cx="63" cy="49" r="1.1" fill="#fff"/>`;
+const _SMILE = `<path d="M40 66 q10 9 20 0" stroke="#20140c" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+const _wrap = s => `<svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">${s}</svg>`;
+const AVATARS_SVG = [
+  /* Ours */ _wrap(`<rect width="100" height="100" fill="#8d6748"/><circle cx="24" cy="26" r="13" fill="#8d6748"/><circle cx="76" cy="26" r="13" fill="#8d6748"/><circle cx="24" cy="26" r="6.5" fill="#b89272"/><circle cx="76" cy="26" r="6.5" fill="#b89272"/>${_EYES}<ellipse cx="50" cy="63" rx="15" ry="11" fill="#c9a883"/><ellipse cx="50" cy="59" rx="5.5" ry="4" fill="#20140c"/>${_SMILE}`),
+  /* Chat */ _wrap(`<rect width="100" height="100" fill="#f2a04d"/><polygon points="18,8 40,30 12,34" fill="#f2a04d"/><polygon points="82,8 60,30 88,34" fill="#f2a04d"/><polygon points="22,14 36,29 18,31" fill="#ffd3a0"/><polygon points="78,14 64,29 82,31" fill="#ffd3a0"/>${_EYES}<polygon points="47,58 53,58 50,63" fill="#7a3b12"/>${_SMILE}<line x1="18" y1="60" x2="34" y2="58" stroke="#fff" stroke-width="1.5"/><line x1="82" y1="60" x2="66" y2="58" stroke="#fff" stroke-width="1.5"/>`),
+  /* Chien */ _wrap(`<rect width="100" height="100" fill="#e0b483"/><ellipse cx="14" cy="42" rx="12" ry="22" fill="#a9754a"/><ellipse cx="86" cy="42" rx="12" ry="22" fill="#a9754a"/>${_EYES}<ellipse cx="50" cy="62" rx="14" ry="10" fill="#f3d9b8"/><ellipse cx="50" cy="58" rx="5.5" ry="4" fill="#3a2414"/>${_SMILE}`),
+  /* Grenouille */ _wrap(`<rect width="100" height="100" fill="#6cbf3f"/><circle cx="32" cy="22" r="14" fill="#6cbf3f"/><circle cx="68" cy="22" r="14" fill="#6cbf3f"/><circle cx="32" cy="22" r="8" fill="#fff"/><circle cx="68" cy="22" r="8" fill="#fff"/><circle cx="32" cy="24" r="4" fill="#20140c"/><circle cx="68" cy="24" r="4" fill="#20140c"/><path d="M32 60 q18 16 36 0" stroke="#2e6b1a" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="40" cy="52" r="1.8" fill="#4a8f2a"/><circle cx="60" cy="52" r="1.8" fill="#4a8f2a"/>`),
+  /* Robot */ _wrap(`<rect width="100" height="100" fill="#9aa7b4"/><rect x="20" y="24" width="60" height="54" rx="12" fill="#c2ccd6"/><line x1="50" y1="8" x2="50" y2="22" stroke="#6b7885" stroke-width="3"/><circle cx="50" cy="7" r="4" fill="#ff5c5c"/><circle cx="38" cy="46" r="7.5" fill="#2b3a47"/><circle cx="62" cy="46" r="7.5" fill="#2b3a47"/><circle cx="38" cy="46" r="3" fill="#7fe7ff"/><circle cx="62" cy="46" r="3" fill="#7fe7ff"/><rect x="40" y="62" width="20" height="5" rx="2.5" fill="#2b3a47"/>`),
+  /* Astronaute */ _wrap(`<rect width="100" height="100" fill="#dfe6ee"/><circle cx="50" cy="52" r="35" fill="#f6f9fc"/><path d="M22 52 a28 28 0 0 1 56 0 a28 28 0 0 1 -56 0" fill="#25405e"/><path d="M30 50 a20 20 0 0 1 40 0 z" fill="#3a5f88"/><ellipse cx="40" cy="44" rx="5" ry="7" fill="#bfe6ff" opacity=".85"/>`),
+  /* Lapin */ _wrap(`<rect width="100" height="100" fill="#f3ede8"/><ellipse cx="38" cy="16" rx="7" ry="18" fill="#f3ede8"/><ellipse cx="62" cy="16" rx="7" ry="18" fill="#f3ede8"/><ellipse cx="38" cy="17" rx="3" ry="12" fill="#f7c9d0"/><ellipse cx="62" cy="17" rx="3" ry="12" fill="#f7c9d0"/>${_EYES}<ellipse cx="50" cy="60" rx="4" ry="3" fill="#e58aa0"/>${_SMILE}`),
+  /* Renard */ _wrap(`<rect width="100" height="100" fill="#e8763a"/><polygon points="14,8 38,32 12,34" fill="#e8763a"/><polygon points="86,8 62,32 88,34" fill="#e8763a"/><polygon points="19,14 34,30 17,31" fill="#3a2414"/><polygon points="81,14 66,30 83,31" fill="#3a2414"/><path d="M28 54 q22 22 44 0 q-22 8 -44 0" fill="#f7ede2"/>${_EYES}<polygon points="46,60 54,60 50,66" fill="#20140c"/>`),
+  /* Panda */ _wrap(`<rect width="100" height="100" fill="#f4f4f4"/><circle cx="24" cy="24" r="12" fill="#2b2b2b"/><circle cx="76" cy="24" r="12" fill="#2b2b2b"/><ellipse cx="37" cy="50" rx="9" ry="11" fill="#2b2b2b" transform="rotate(-15 37 50)"/><ellipse cx="63" cy="50" rx="9" ry="11" fill="#2b2b2b" transform="rotate(15 63 50)"/><circle cx="38" cy="50" r="4" fill="#fff"/><circle cx="62" cy="50" r="4" fill="#fff"/><ellipse cx="50" cy="64" rx="4" ry="3" fill="#2b2b2b"/><path d="M42 70 q8 6 16 0" stroke="#2b2b2b" stroke-width="2.4" fill="none" stroke-linecap="round"/>`),
+  /* Lion */ _wrap(`<rect width="100" height="100" fill="#f2c14e"/><g fill="#c67f22"><circle cx="50" cy="12" r="9"/><circle cx="24" cy="22" r="9"/><circle cx="76" cy="22" r="9"/><circle cx="12" cy="48" r="9"/><circle cx="88" cy="48" r="9"/><circle cx="20" cy="74" r="9"/><circle cx="80" cy="74" r="9"/><circle cx="50" cy="86" r="9"/></g><circle cx="50" cy="50" r="30" fill="#f2c14e"/>${_EYES}<polygon points="45,58 55,58 50,63" fill="#7a3b12"/>${_SMILE}`),
+  /* Chauffeur (transport) */ _wrap(`<rect width="100" height="100" fill="#f0c19b"/><path d="M14 40 h72 v-6 a36 22 0 0 0 -72 0 z" fill="#2d6bd4"/><rect x="10" y="38" width="80" height="8" rx="4" fill="#1b4fa0"/><circle cx="50" cy="28" r="5.5" fill="#ffcf33"/>${_EYES}<ellipse cx="50" cy="60" rx="3.5" ry="2.6" fill="#c67b53"/>${_SMILE}`),
+  /* Ouvrier (casque) */ _wrap(`<rect width="100" height="100" fill="#f0c19b"/><path d="M16 42 a34 30 0 0 1 68 0 z" fill="#ffcf33"/><rect x="12" y="40" width="76" height="7" rx="3.5" fill="#e0a400"/><rect x="46" y="14" width="8" height="12" rx="2" fill="#e0a400"/>${_EYES}<ellipse cx="50" cy="60" rx="3.5" ry="2.6" fill="#c67b53"/>${_SMILE}`),
+];
+const overlayAvatar = document.getElementById('overlayAvatar');
+const grilleAvatars = document.getElementById('grilleAvatars');
+const inputPhoto = document.getElementById('inputPhoto');
+let avatarCible = 0;
+
+/* Vos avatars images du dossier avatars/ (chargés automatiquement) */
+let AVATARS_IMG = [];
+function chargerAvatarsExternes(){
+  // Méthode 2 : noms libres listés dans avatars/liste.js
+  if(Array.isArray(window.AVATARS_FICHIERS) && window.AVATARS_FICHIERS.length){
+    AVATARS_IMG = window.AVATARS_FICHIERS.map(f=>'avatars/'+f);
+    return;
+  }
+  // Méthode 1 : détection auto des fichiers numérotés 1,2,3…
+  const exts=['png','jpg','jpeg','webp','svg','gif'];
+  const testerNumero = n => new Promise(res=>{
+    let e=0;
+    const tryExt=()=>{
+      if(e>=exts.length){ res(null); return; }
+      const src='avatars/'+n+'.'+exts[e];
+      const img=new Image();
+      img.onload=()=>res(src);
+      img.onerror=()=>{ e++; tryExt(); };
+      img.src=src;
+    };
+    tryExt();
+  });
+  (async()=>{
+    let i=1, miss=0; const MAX=80, MAX_MISS=4;
+    while(i<=MAX && miss<MAX_MISS){
+      const src = await testerNumero(i);
+      if(src){ AVATARS_IMG.push(src); miss=0; } else { miss++; }
+      i++;
+    }
+  })();
+}
+chargerAvatarsExternes();
+
+function ouvrirAvatar(i){
+  avatarCible = i;
+  document.getElementById('avatarPourQui').textContent = `Avatar de « ${joueurs[i].nom} »`;
+  grilleAvatars.innerHTML='';
+  if(AVATARS_IMG.length){
+    // Vos images du dossier avatars/ : elles REMPLACENT les avatars dessinés
+    AVATARS_IMG.forEach(src=>{
+      const b=document.createElement('button');
+      b.className='av-choix'; b.innerHTML=`<img src="${src}" alt="">`;
+      b.onclick=()=>{ joueurs[avatarCible].avatar={type:'img',val:src}; majAvatar(avatarCible); overlayAvatar.classList.remove('on'); };
+      grilleAvatars.appendChild(b);
+    });
+  }else{
+    // Aucune image déposée : on affiche les avatars dessinés d'origine (secours)
+    AVATARS_SVG.forEach(svg=>{
+      const b=document.createElement('button');
+      b.className='av-choix'; b.innerHTML=svg;
+      b.onclick=()=>{ joueurs[avatarCible].avatar={type:'svg',val:svg}; majAvatar(avatarCible); overlayAvatar.classList.remove('on'); };
+      grilleAvatars.appendChild(b);
+    });
+  }
+  overlayAvatar.classList.add('on');
+}
+document.getElementById('btnFermerAvatar').onclick = ()=> overlayAvatar.classList.remove('on');
+document.getElementById('btnAvatarDefaut').onclick = ()=>{
+  joueurs[avatarCible].avatar=null; majAvatar(avatarCible); overlayAvatar.classList.remove('on');
+};
+inputPhoto.onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ev=>{
+    const img = new Image();
+    img.onload = ()=>{
+      // recadrage carré centré + réduction à 160px pour rester léger
+      const S=160, c=document.createElement('canvas'); c.width=S; c.height=S;
+      const cx=c.getContext('2d');
+      const scale=Math.max(S/img.width, S/img.height);
+      const w=img.width*scale, h=img.height*scale;
+      cx.drawImage(img,(S-w)/2,(S-h)/2,w,h);
+      joueurs[avatarCible].avatar={type:'img', val:c.toDataURL('image/jpeg',0.85)};
+      majAvatar(avatarCible);
+      overlayAvatar.classList.remove('on');
+    };
+    img.src = ev.target.result;
+  };
+  rd.readAsDataURL(f);
+  e.target.value='';
+};
+
+/* =========================================================
+   RÉGLAGES (énigmes + roue)
+   ========================================================= */
+const overlayReglages = document.getElementById('overlayReglages');
+const txtEnigmes = document.getElementById('txtEnigmes');
+const txtRoue = document.getElementById('txtRoue');
+
+document.getElementById('btnReglages').onclick = ()=>{
+  txtEnigmes.value = ENIGMES.map(e=> `${e.enonce} | ${e.mot}`).join('\n');
+  txtRoue.value = SEGMENTS_DEF.map(s=> `${s.type} | ${s.val}`).join('\n');
+  overlayReglages.classList.add('on');
+};
+document.getElementById('btnFermerReglages').onclick = ()=> overlayReglages.classList.remove('on');
+document.querySelectorAll('.onglet').forEach(o=>{
+  o.onclick = ()=>{
+    document.querySelectorAll('.onglet').forEach(x=>x.classList.remove('actif'));
+    document.querySelectorAll('.panneau').forEach(x=>x.classList.remove('actif'));
+    o.classList.add('actif');
+    document.getElementById(o.dataset.panneau).classList.add('actif');
+  };
+});
+document.getElementById('btnAppliquerReglages').onclick = ()=>{
+  // Énigmes
+  const nouvellesEnigmes = txtEnigmes.value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split('|');
+    return { enonce:(p[0]||'Énigme').trim(), mot:(p.slice(1).join('|')||p[0]).trim().toUpperCase() };
+  }).filter(e=> normaliser(e.mot).length>0);
+  if(nouvellesEnigmes.length) ENIGMES = nouvellesEnigmes;
+
+  // Roue
+  const nouveauxSeg = txtRoue.value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const p = l.split('|').map(x=>x.trim());
+    let type = (p[0]||'somme').toLowerCase();
+    if(!['somme','banqueroute','holdup','diviseur','passe'].includes(type)) type='somme';
+    return { type, val: parseInt(p[1],10)||0 };
+  });
+  if(nouveauxSeg.length>=2){ SEGMENTS_DEF = nouveauxSeg; construireSegments(); dessinerRoue(); }
+
+  overlayReglages.classList.remove('on');
+  // recharge la manche courante avec la nouvelle énigme
+  chargerEnigme(mancheIndex);
+  setConsigne('Réglages appliqués ✔', 'action');
+  majJoueurs();
+};
+
+/* =========================================================
+   AUDIO — musique + effets (Web Audio, aucun fichier)
+   ========================================================= */
+let actx=null, gainMusique=null, musiqueOn=false, seqTimer=null, pas=0;
+const btnMusique = document.getElementById('btnMusique');
+
+// Fréquences des notes
+const NT={C2:65.41,D2:73.42,E2:82.41,F2:87.31,G2:98.00,A2:110.0,B2:123.47,
+          C3:130.81,E3:164.81,G3:196.00,A3:220.00,
+          C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392.00,A4:440.0,B4:493.88,
+          C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880.0};
+// Mélodie type jeu télé (C - Am - F - G) et basse
+const LEAD=[NT.E5,NT.G5,NT.C5,NT.G5, NT.E5,NT.A4,NT.C5,NT.A4, NT.A4,NT.C5,NT.F5,NT.C5, NT.B4,NT.D5,NT.G5,NT.D5];
+const BASS=[NT.C3,NT.C3,NT.G2,NT.G2, NT.A2,NT.A2,NT.E3,NT.E3, NT.F2,NT.F2,NT.C3,NT.C3, NT.G2,NT.G2,NT.G2,NT.B2];
+const PAS_DUREE=210; // ms par pas
+
+function initAudio(){
+  if(actx) return;
+  actx = new (window.AudioContext||window.webkitAudioContext)();
+  gainMusique = actx.createGain();
+  gainMusique.gain.value = 0.16;
+  gainMusique.connect(actx.destination);
+}
+function demarrerAudioSiBesoin(){ if(actx && actx.state==='suspended') actx.resume(); }
+
+function note(freq,debut,duree,type='triangle',vol=0.2,dest=null){
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type=type; o.frequency.value=freq;
+  o.connect(g); g.connect(dest||actx.destination);
+  g.gain.setValueAtTime(0.0001,debut);
+  g.gain.exponentialRampToValueAtTime(vol,debut+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,debut+duree);
+  o.start(debut); o.stop(debut+duree+0.05);
+}
+
+function jouerPas(){
+  if(!actx) return;
+  const t=actx.currentTime;
+  const l=LEAD[pas%LEAD.length], b=BASS[pas%BASS.length];
+  if(l) note(l,t,PAS_DUREE/1000*0.9,'triangle',0.22,gainMusique);
+  if(b) note(b,t,PAS_DUREE/1000*0.9,'sine',0.30,gainMusique);
+  pas++;
+}
+btnMusique.onclick = ()=>{
+  initAudio(); demarrerAudioSiBesoin();
+  musiqueOn=!musiqueOn;
+  if(musiqueOn){
+    btnMusique.textContent='🎵 Musique : ON'; btnMusique.classList.add('on');
+    pas=0; jouerPas(); seqTimer=setInterval(jouerPas, PAS_DUREE);
+  }else{
+    btnMusique.textContent='🔊 Musique : OFF'; btnMusique.classList.remove('on');
+    clearInterval(seqTimer);
+  }
+};
+
+/* --- Effets sonores --- */
+function bip(freqs,dureeNote=0.12,type='square',vol=0.25){
+  if(!actx) return; let t=actx.currentTime;
+  freqs.forEach(f=>{ note(f,t,dureeNote,type,vol); t+=dureeNote; });
+}
+function jouerTicsRoue(){
+  if(!actx) return;
+  let n=26, t=actx.currentTime, gap=0.06;
+  for(let i=0;i<n;i++){ note(1200,t,0.03,'square',0.08); t+=gap; gap*=1.07; } // tics qui ralentissent
+}
+const sfxBon        = ()=> bip([NT.E5,NT.A5],0.11,'triangle',0.25);
+const sfxMauvais    = ()=> bip([NT.A3,NT.E3],0.16,'sawtooth',0.22);
+const sfxSomme      = ()=> bip([NT.C5,NT.E5,NT.G5],0.09,'triangle',0.22);
+const sfxHoldup     = ()=> bip([NT.C4,NT.C4,NT.E4],0.14,'sawtooth',0.25);
+const sfxBanqueroute= ()=> bip([NT.A3,NT.F3||NT.G3,NT.D2||NT.E2,NT.C2],0.18,'sawtooth',0.28);
+const sfxVol        = ()=> bip([NT.G4,NT.C5,NT.E5,NT.G5],0.09,'square',0.2);
+const sfxVictoire   = ()=> bip([NT.C5,NT.E5,NT.G5,NT.C5*2||NT.A5,NT.G5,NT.C5*2||NT.A5],0.12,'triangle',0.28);
+
+/* =========================================================
+   CONFETTIS
+   ========================================================= */
+const cvConf = document.getElementById('confettis');
+const cctx = cvConf.getContext('2d');
+let confParticules=[], confAnim=null;
+function lancerConfettis(){
+  cvConf.style.display='block'; cvConf.width=innerWidth; cvConf.height=innerHeight;
+  const cols=['#ffcf33','#d9264a','#2d6bd4','#1faa59','#5b2a86','#e8631a','#fff'];
+  confParticules=[];
+  for(let i=0;i<170;i++){
+    confParticules.push({x:Math.random()*cvConf.width,y:-20-Math.random()*cvConf.height,
+      s:5+Math.random()*8,c:cols[Math.floor(Math.random()*cols.length)],
+      vy:2+Math.random()*4,vx:-2+Math.random()*4,rot:Math.random()*6,vr:-.2+Math.random()*.4});
+  }
+  const anim=()=>{
+    cctx.clearRect(0,0,cvConf.width,cvConf.height);
+    confParticules.forEach(p=>{
+      p.y+=p.vy;p.x+=p.vx;p.rot+=p.vr;
+      if(p.y>cvConf.height+20){p.y=-20;p.x=Math.random()*cvConf.width;}
+      cctx.save();cctx.translate(p.x,p.y);cctx.rotate(p.rot);
+      cctx.fillStyle=p.c;cctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);cctx.restore();
+    });
+    confAnim=requestAnimationFrame(anim);
+  };
+  anim();
+}
+function arreterConfettis(){ if(confAnim)cancelAnimationFrame(confAnim); cctx.clearRect(0,0,cvConf.width,cvConf.height); cvConf.style.display='none'; }
+
+/* =========================================================
+   BOUTONS + INIT
+   ========================================================= */
+btnTourner.onclick = tournerRoue;
+construireSegments();
+dessinerRoue();
+construireJoueurs();
+chargerEnigme(0);
+majMancheInfo();
+majJoueurs();
+setConsigne(`Bienvenue ! Au tour de ${joueurs[0].nom}. Cliquez sur « Tourner la roue ».`, 'action');
+</script>
+
+<!-- =========================================================
+     RÉSEAU — télécommandes téléphone (actif seulement via le serveur Node)
+     ========================================================= -->
+<script>
+(function(){
+  if(typeof io === 'undefined') return;   // fichier ouvert sans serveur → jeu solo normal
+  const socket = io();
+  let salonPret = false;
+
+  // Diffuse l'état courant (tour + roue jouable) à tous les téléphones
+  function etatCourant(){
+    return {
+      actif: joueurActif,
+      peutTourner: !!rouePeutTourner,
+      noms: joueurs.map(j=>j.nom)
+    };
+  }
+  function diffuser(){ if(salonPret) socket.emit('host:etat', etatCourant()); }
+  window.__diffuserEtat = diffuser;
+
+  // On enveloppe les fonctions clés pour diffuser à chaque changement de tour / d'état de la roue
+  ['majJoueurs','reactiverRoue','tournerRoue'].forEach(function(nom){
+    const orig = window[nom];
+    if(typeof orig === 'function'){
+      window[nom] = function(){ const r = orig.apply(this, arguments); diffuser(); return r; };
+    }
+  });
+  // le bouton local doit appeler la version enveloppée
+  if (typeof btnTourner !== 'undefined') btnTourner.onclick = window.tournerRoue;
+
+  // Création du salon
+  socket.emit('host:create', function(res){
+    salonPret = true;
+    const code = res.code;
+    const base = location.origin + '/play.html';
+    const url  = base + '?code=' + code;
+    document.getElementById('codeEleves').textContent = code;
+    document.getElementById('urlEleves').textContent  = base;
+    document.getElementById('qrEleves').src =
+      'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data=' + encodeURIComponent(url);
+    document.getElementById('btnEleves').classList.remove('cache');
+    diffuser();
+  });
+
+  // Un candidat distant appuie sur « Tourner » : autorisé seulement si c'est son tour
+  socket.on('tournerDistant', function(d){
+    if (d && d.slot === joueurActif && rouePeutTourner){
+      window.tournerRoue();
+    }
+  });
+
+  // Indicateur 📱 sur la carte du candidat connecté
+  function marquerTel(slot, connecte){
+    const carte = document.querySelector('.joueur[data-index="'+slot+'"]');
+    if(!carte) return;
+    let b = carte.querySelector('.badge-tel');
+    if(connecte){ if(!b){ b=document.createElement('div'); b.className='badge-tel'; b.textContent='📱'; carte.appendChild(b); } }
+    else if(b){ b.remove(); }
+  }
+  // Applique le pseudo saisi par l'élève sur son téléphone → carte candidat à l'écran
+  function appliquerNomDistant(slot, nom){
+    nom = (nom==null ? '' : (''+nom)).trim().slice(0,16);
+    if(!nom || !joueurs[slot]) return;
+    joueurs[slot].nom = nom;
+    const inp = document.querySelector('.nom-input[data-index="'+slot+'"]');
+    if(inp) inp.value = nom;
+    diffuser();   // renvoie les noms à jour à tous les téléphones
+  }
+  socket.on('joueur:connecte',   d=>{ marquerTel(d.slot, true); appliquerNomDistant(d.slot, d.nom); });
+  socket.on('joueur:deconnecte', d=> marquerTel(d.slot, false));
+  socket.on('joueur:nom',        d=> appliquerNomDistant(d.slot, d.nom));
+
+  // Ouverture / fermeture de la fenêtre de connexion
+  document.getElementById('btnEleves').onclick   = ()=> document.getElementById('overlayEleves').classList.add('on');
+  document.getElementById('btnFermerEleves').onclick = ()=> document.getElementById('overlayEleves').classList.remove('on');
+})();
+</script>
+</body>
+</html>

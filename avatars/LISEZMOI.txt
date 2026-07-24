@@ -1,0 +1,32 @@
+COMMENT AJOUTER VOS PROPRES AVATARS (IMAGES) AU JEU
+====================================================
+
+Ce dossier « avatars » sert à ajouter vos images de personnages
+dans le choix d'avatar de « La Roue de la Fortune ».
+
+Formats acceptés : PNG, JPG, SVG, WEBP, GIF.
+Conseil : des images CARRÉES (ex. 200 x 200 px) rendent le mieux,
+car elles sont affichées en rond.
+
+
+DEUX MÉTHODES AU CHOIX
+----------------------
+
+MÉTHODE 1 — la plus simple (fichiers numérotés)
+  Renommez vos images :  1.png, 2.png, 3.png, 4.png ...
+  Mettez-les dans ce dossier.
+  Elles apparaissent automatiquement dans le jeu.
+  (Ne touchez pas au fichier liste.js.)
+
+MÉTHODE 2 — garder vos noms de fichiers
+  Ouvrez le fichier « liste.js » avec le Bloc-notes et écrivez
+  les noms de vos images, par exemple :
+
+     window.AVATARS_FICHIERS = ["renard.png", "loup.png", "panda.svg"];
+
+
+APRÈS AVOIR AJOUTÉ VOS IMAGES
+-----------------------------
+Rouvrez (ou rechargez) le jeu, cliquez sur la pastille ronde d'un
+candidat : vos images s'affichent en haut de la fenêtre de choix,
+avant les avatars dessinés d'origine.
