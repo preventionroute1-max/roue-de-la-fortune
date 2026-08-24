@@ -773,8 +773,8 @@ function tempsEcouleHoldup(){
   modeHoldUp = false;
   document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
   sfxMauvais();
-  setConsigne(`⏱ Temps écoulé ! Hold-up annulé. ${joueurs[joueurActif].nom} rejoue : tournez la roue.`, 'action');
-  reactiverRoue(true);
+  setConsigne(`⏱ Temps écoulé ! Hold-up annulé. Au candidat suivant.`, '');
+  setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
 }
 
 /* =========================================================
@@ -851,15 +851,15 @@ function jouerLettre(lettre, bouton){
     if(nb>0){
       bouton.classList.add('ok'); sfxBon();
       if(motCompletTrouve()){ setTimeout(gagnerManche,500); return; }
-      setConsigne(`✅ Voyelle « ${lettre} » achetée (${nb} trouvée·s). ${joueurs[joueurActif].nom} continue : tournez la roue.`, 'action');
+      setConsigne(`✅ Voyelle « ${lettre} » achetée (${nb} trouvée·s) pour ${joueurs[joueurActif].nom}. Au candidat suivant.`, 'action');
+      setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
+      return;
     }else{
       bouton.classList.add('ko'); sfxMauvais();
       setConsigne(`❌ Pas de « ${lettre} » dans le mot. -${COUT_VOYELLE} pts quand même. Au joueur suivant.`, '');
       setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1400);
       return;
     }
-    reactiverRoue(true);
-    return;
   }
 
   /* --- Lettre normale (après un tour de roue) --- */
@@ -880,8 +880,8 @@ function jouerLettre(lettre, bouton){
     if(segCourant && segCourant.type==='holdup'){ lancerHoldUp(); }
     else if(segCourant && segCourant.type==='diviseur'){ lancerDiviseur(); }
     else{
-      setConsigne(`✅ ${nb} × « ${lettre} » ! +${gain} points. ${joueurs[joueurActif].nom} rejoue : tournez la roue.`, 'action');
-      reactiverRoue(true);
+      setConsigne(`✅ ${nb} × « ${lettre} » ! +${gain} points pour ${joueurs[joueurActif].nom}. Au candidat suivant.`, 'action');
+      setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
     }
   }else{
     bouton.classList.add('ko'); sfxMauvais();
@@ -914,8 +914,8 @@ btnVoyelle.onclick = ()=>{
 function lancerHoldUp(){
   const cibles = joueurs.map((j,i)=>({j,i})).filter(o=> o.i!==joueurActif && o.j.score>0);
   if(cibles.length===0){
-    setConsigne('Aucun adversaire n’a de points à voler. Vous rejouez : tournez la roue.', 'action');
-    reactiverRoue(true); return;
+    setConsigne('Aucun adversaire n’a de points à voler. Au candidat suivant.', 'action');
+    setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300); return;
   }
   modeHoldUp = true; reactiverRoue(false);
   setConsigne(`🎯 HOLD-UP ! ${joueurs[joueurActif].nom}, CLIQUEZ sur la cagnotte d’un adversaire pour lui voler ses points !`, 'holdup');
@@ -931,8 +931,8 @@ function volerPoints(indexCible){
   victime.score = 0; voleur.score += butin; modeHoldUp = false;
   document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
   majJoueurs(); sfxVol();
-  setConsigne(`💰 ${voleur.nom} a dévalisé ${victime.nom} et empoche ${butin} points ! Tournez la roue.`, 'action');
-  reactiverRoue(true);
+  setConsigne(`💰 ${voleur.nom} a dévalisé ${victime.nom} et empoche ${butin} points ! Au candidat suivant.`, 'action');
+  setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
 }
 
 /* =========================================================
@@ -943,8 +943,8 @@ function lancerDiviseur(){
   const d = (segCourant && segCourant.val) || 2;
   const cibles = joueurs.map((j,i)=>({j,i})).filter(o=> o.i!==joueurActif && o.j.score>0);
   if(cibles.length===0){
-    setConsigne(`Aucun adversaire n'a de points à diviser. Vous rejouez : tournez la roue.`, 'action');
-    reactiverRoue(true); return;
+    setConsigne(`Aucun adversaire n'a de points à diviser. Au candidat suivant.`, 'action');
+    setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300); return;
   }
   modeDiviseur = true; reactiverRoue(false);
   setConsigne(`➗ DIVISEUR ÷${d} ! ${joueurs[joueurActif].nom}, CLIQUEZ sur la cagnotte d'un adversaire pour la diviser par ${d} !`, 'holdup');
@@ -961,15 +961,15 @@ function diviserPoints(indexCible){
   modeDiviseur = false;
   document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
   majJoueurs(); sfxBanqueroute();
-  setConsigne(`➗ ${joueurs[joueurActif].nom} a divisé la cagnotte de ${victime.nom} par ${d} (${avant} → ${victime.score}) ! Tournez la roue.`, 'action');
-  reactiverRoue(true);
+  setConsigne(`➗ ${joueurs[joueurActif].nom} a divisé la cagnotte de ${victime.nom} par ${d} (${avant} → ${victime.score}) ! Au candidat suivant.`, 'action');
+  setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
 }
 function tempsEcouleDiviseur(){
   modeDiviseur = false;
   document.querySelectorAll('.joueur.cible').forEach(c=>c.classList.remove('cible'));
   sfxMauvais();
-  setConsigne(`⏱ Temps écoulé ! Division annulée. ${joueurs[joueurActif].nom} rejoue : tournez la roue.`, 'action');
-  reactiverRoue(true);
+  setConsigne(`⏱ Temps écoulé ! Division annulée. Au candidat suivant.`, '');
+  setTimeout(()=>{ tourSuivant(); reactiverRoue(true); }, 1300);
 }
 
 /* =========================================================
