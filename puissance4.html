@@ -1,0 +1,2529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f1626">
+<title>Puissance 4 des énigmes | PREVENTION ROUTE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f1626; --navy2:#182136;
+  --white:#fff; --line:rgba(255,255,255,.12);
+  --muted:#93a0bb; --orange:#f06c00; --orange-l:#ff8c00;
+  --jaune:#f5b301; --jaune-l:#ffe082;
+  --rouge:#e5322d; --rouge-l:#ff8a80;
+  --vert:#2ecc71;
+  --font:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --cond:'Barlow Condensed','Barlow',system-ui,sans-serif;
+  --r:6px; --rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font);background:var(--navy);color:var(--white);min-height:100%;
+  -webkit-text-size-adjust:100%;
+  background-image:radial-gradient(1000px 600px at 15% -10%,rgba(240,108,0,.14),transparent 60%),
+                   radial-gradient(900px 500px at 90% 110%,rgba(41,98,255,.16),transparent 60%);
+  background-attachment:fixed;
+}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+.screen{display:none}
+.screen.on{display:block}
+.wrap{max-width:1500px;margin:0 auto;padding:16px}
+.mono{font-variant-numeric:tabular-nums}
+.hide{display:none !important}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:var(--r);
+  font-family:var(--cond);font-weight:800;font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;
+  background:var(--orange);color:#fff;border:2px solid var(--orange);transition:.2s;text-decoration:none}
+.btn:hover:not(:disabled){background:var(--orange-l);border-color:var(--orange-l)}
+.btn.ghost{background:transparent;color:#fff;border-color:var(--line)}
+.btn.ghost:hover:not(:disabled){background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35)}
+.btn.sm{padding:8px 14px;font-size:.9rem}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.card{background:var(--navy2);border:1px solid var(--line);border-radius:var(--rl);padding:22px}
+.h1{font-family:var(--cond);font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;text-transform:uppercase;letter-spacing:.03em;line-height:1.05}
+.h2{font-family:var(--cond);font-size:1.25rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.lbl{font-family:var(--cond);font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.sub{color:var(--muted);font-size:.95rem;line-height:1.6}
+.field{width:100%;padding:14px 16px;border-radius:var(--r);background:rgba(255,255,255,.06);
+  border:1.5px solid var(--line);color:#fff;outline:none}
+.field:focus{border-color:var(--orange)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);display:inline-block;flex:none}
+.dot.ok{background:var(--vert);box-shadow:0 0 0 4px rgba(46,204,113,.18)}
+.dot.ko{background:var(--rouge)}
+
+.home{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:28px 18px}
+.home-logo{font-family:var(--cond);font-weight:800;letter-spacing:.22em;font-size:.8rem;color:var(--orange);text-transform:uppercase}
+.home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;width:100%;max-width:840px}
+.home-cards .card{display:flex;flex-direction:column;gap:14px}
+
+.topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 16px;
+  background:rgba(15,22,38,.85);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;backdrop-filter:blur(8px)}
+.topbar .brand{font-family:var(--cond);font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:1rem;white-space:nowrap}
+.topbar .brand b{color:var(--orange)}
+.code-chip{font-family:var(--cond);font-weight:800;font-size:1.5rem;letter-spacing:.32em;
+  background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:var(--r);padding:3px 8px 3px 16px}
+.spacer{flex:1}
+.netpill{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+
+.lobby{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:22px;align-items:start}
+.qrbox{background:#fff;border-radius:var(--rl);padding:14px;line-height:0}
+.qrbox svg{width:100%;height:auto;display:block;shape-rendering:crispEdges}
+.joinurl{word-break:break-all;font-size:.85rem;color:var(--muted);margin-top:12px;text-align:center}
+.bigcode{font-family:var(--cond);font-weight:800;font-size:2.6rem;letter-spacing:.3em;color:var(--orange);line-height:1}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.slot-col{border:1px solid var(--line);border-radius:var(--rl);padding:14px;background:rgba(255,255,255,.03)}
+.slot-col h3{font-family:var(--cond);text-transform:uppercase;letter-spacing:.08em;font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.pip{width:16px;height:16px;border-radius:50%;flex:none}
+.pip.j{background:radial-gradient(circle at 34% 28%,var(--jaune-l),var(--jaune))}
+.pip.r{background:radial-gradient(circle at 34% 28%,var(--rouge-l),var(--rouge))}
+.slot{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r);
+  border:1.5px dashed var(--line);color:var(--muted);margin-bottom:9px;font-size:.95rem;min-height:48px;width:100%;text-align:left}
+.slot.taken{border-style:solid;color:#fff;background:rgba(255,255,255,.06);font-weight:600;cursor:default}
+.slot .num{font-family:var(--cond);font-weight:800;opacity:.5}
+.slot .x{margin-left:auto;color:var(--muted);font-size:1.2rem;padding:0 4px}
+.slot .x:hover{color:var(--rouge)}
+.opts{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.opt{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted)}
+.opt select{background:rgba(255,255,255,.06);border:1.5px solid var(--line);border-radius:var(--r);padding:8px 10px}
+
+.game{display:grid;grid-template-columns:minmax(300px,42vh) 1fr;gap:24px;align-items:start}
+.board-wrap{position:relative}
+
+/* Ecran animateur : le plateau occupe le haut de l'ecran, l'enigme et les
+   lettres se lisent dessous. */
+/* Trois colonnes : l'enigme et l'alphabet a gauche, le plateau en grand au
+   centre, la roue bonus a droite. Toute la hauteur va au Puissance 4. */
+#scr-host .game{display:flex;flex-direction:column;align-items:stretch;gap:8px;
+  height:calc(100vh - var(--hh,66px));height:calc(100dvh - var(--hh,66px))}
+#scr-host .game > *{width:100%;max-width:none}
+#scr-host .wrap{padding:8px 16px 0;overflow:hidden}
+#scr-host .milieu{flex:1;min-height:0;display:flex;gap:10px;align-items:stretch;justify-content:center;width:100%}
+#scr-host .cote{width:clamp(190px,19.5vw,320px);flex:none;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden auto}
+#scr-host .board-wrap{flex:1 1 auto;min-width:0;align-self:stretch;
+  display:flex;align-items:center;justify-content:center}
+#scr-host .plateau{width:var(--bw,100%);max-width:100%}
+#scr-host .traybloc{background:var(--navy2);border:1px solid var(--line);border-radius:var(--rl);padding:12px}
+#scr-host .cols{margin-bottom:6px}
+.cols-caches .cols{visibility:hidden}
+#scr-host .turn{padding:10px 18px}
+#scr-host .turn .who{font-size:clamp(1.1rem,2.9vh,1.7rem)}
+#scr-host .turn .act{font-size:clamp(.8rem,1.7vh,1rem)}
+#scr-host .timer{font-size:clamp(1.4rem,3.5vh,2.2rem);padding:5px 10px;min-width:58px}
+#scr-host .wl{width:clamp(24px,3.5vh,46px);height:clamp(32px,4.7vh,58px);font-size:clamp(1rem,3vh,1.9rem)}
+#scr-host .roue-col{width:100%;flex:1;min-height:0;background:var(--navy2);
+  border:1px solid var(--line);border-radius:var(--rl);padding:12px;
+  display:flex;align-items:center;justify-content:center}
+#scr-host .roue-zone.compacte{gap:10px;width:100%}
+#scr-host .roue-zone.compacte .roue-wrap{width:min(100%,30vh)}
+#scr-host .roue-zone.compacte .roue{border-width:4px}
+#scr-host .roue-zone.compacte .roue-legende{flex-direction:column;gap:6px;font-size:.76rem;
+  align-items:flex-start;text-align:left;line-height:1.25}
+#scr-host .roue-zone.compacte .roue-actions{flex-direction:column;gap:8px;width:100%}
+#scr-host .roue-zone.compacte .roue-actions .btn{width:100%;padding:10px 8px;font-size:.95rem}
+#scr-host .roue-zone.compacte .sub{font-size:.78rem;line-height:1.35}
+#scr-host .enig{text-align:center;padding:12px 20px}
+#scr-host .enig .def{font-size:clamp(1rem,2.3vh,1.5rem);margin-top:4px}
+#scr-host .enig-haut{display:flex;align-items:center;justify-content:center;gap:10px 22px;
+  flex-wrap:wrap;padding:9px 18px;flex:none}
+#scr-host .enig-haut .lbl{flex:none}
+#scr-host .enig-haut .def{margin-top:0;text-align:left}
+#scr-host .enig-haut .word{margin-top:0}
+#scr-host .word{justify-content:center;margin-top:10px;gap:6px}
+#scr-host .tray{justify-content:center;gap:6px;margin-top:0}
+#scr-host .key{width:clamp(30px,4.2vh,54px);height:clamp(34px,5vh,58px);font-size:clamp(1rem,2.7vh,1.5rem)}
+#scr-host .traybloc{text-align:center}
+#scr-host .strip{flex:none;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding-bottom:2px}
+.act-msg{font-weight:700}
+.act-msg.good{color:var(--vert)}
+.act-msg.bad{color:var(--rouge-l)}
+.act-msg.info{color:var(--orange-l)}
+.equipe{background:var(--navy2);border:1px solid var(--line);border-radius:var(--rl);padding:11px 12px;flex:none}
+.equipe.j{border-color:rgba(245,179,1,.45)}
+.equipe.r{border-color:rgba(229,50,45,.45)}
+.eq-tete{display:flex;align-items:center;gap:8px;font-family:var(--cond);font-weight:800;
+  text-transform:uppercase;letter-spacing:.05em;font-size:1.02rem;line-height:1}
+.eq-tete b{margin-left:auto;font-size:1.5rem;line-height:1}
+.eq-tete small{font-size:.62rem;letter-spacing:.1em;color:var(--muted);align-self:flex-end;padding-bottom:2px}
+.equipe.j .eq-tete b{color:var(--jaune)}
+.equipe.r .eq-tete b{color:var(--rouge)}
+.eq-joueur{display:flex;align-items:center;gap:9px;margin-top:8px;padding:7px 10px;border-radius:var(--r);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-weight:600;font-size:.95rem}
+.eq-joueur .num{font-family:var(--cond);font-weight:800;opacity:.45}
+.eq-joueur small{color:var(--muted);font-size:.72rem}
+.eq-joueur.actif{background:var(--orange);border-color:var(--orange);color:#fff}
+.eq-joueur.actif small{color:rgba(255,255,255,.75)}
+.eq-joueur.vide{color:var(--muted);background:transparent;border-style:dashed}
+.eq-joueur.hors{opacity:.45}
+.scmini{display:inline-flex;align-items:center;gap:9px;padding:6px 15px;border-radius:20px;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);font-family:var(--cond);
+  font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.88rem;color:var(--muted)}
+.scmini b{font-size:1.35rem;line-height:1}
+.scmini.j b{color:var(--jaune)}
+.scmini.r b{color:var(--rouge)}
+.cols{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--g,8px);margin-bottom:8px;
+  padding:0 calc(var(--g,8px) * 1.25)}
+.colbtn{aspect-ratio:1.7;border-radius:var(--r);background:rgba(255,255,255,.07);border:1.5px solid var(--line);
+  font-family:var(--cond);font-weight:800;font-size:1.1rem;color:var(--muted);transition:.15s}
+.colbtn:hover:not(:disabled){background:var(--orange);border-color:var(--orange);color:#fff;transform:translateY(-2px)}
+.colbtn:disabled{opacity:.22;cursor:not-allowed}
+.colbtn.retire:hover:not(:disabled){background:var(--rouge);border-color:var(--rouge)}
+
+.roue-zone{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.roue-wrap{position:relative;width:min(34vh,260px);aspect-ratio:1}
+.roue{width:100%;height:100%;border-radius:50%;border:6px solid rgba(255,255,255,.92);
+  box-shadow:0 14px 44px rgba(0,0,0,.55),inset 0 0 0 3px rgba(0,0,0,.22)}
+.roue.tourne{animation:tourner 3s cubic-bezier(.12,.85,.15,1) forwards}
+@keyframes tourner{from{transform:rotate(0deg)}to{transform:rotate(var(--fin,1080deg))}}
+.roue-fleche{position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:0;height:0;
+  border-left:13px solid transparent;border-right:13px solid transparent;border-top:24px solid #fff;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.7));z-index:2}
+.roue-legende{display:flex;gap:8px 18px;flex-wrap:wrap;justify-content:center;font-size:.86rem;color:var(--muted)}
+.roue-legende span{display:inline-flex;align-items:center;gap:7px}
+.roue-legende i{width:12px;height:12px;border-radius:3px;flex:none}
+.roue-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.roue-res{width:100%;border-radius:var(--r);border:2px solid var(--c);background:rgba(255,255,255,.05);
+  padding:10px 12px;text-align:center}
+.roue-res-h{font-family:var(--cond);font-size:.7rem;font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--c)}
+.roue-res-t{font-family:var(--cond);font-weight:800;font-size:clamp(.95rem,2.1vh,1.3rem);line-height:1.15;margin-top:3px}
+.roue-res-s{font-size:.78rem;color:var(--muted);margin-top:5px;line-height:1.35}
+.roue-res.pop{animation:pop .5s cubic-bezier(.3,1.5,.5,1)}
+canvas.confettis{position:fixed;inset:0;pointer-events:none;z-index:90}
+
+/* Annonce plein ecran : resultat de la roue et petites piques. Elle laisse
+   passer les clics, l'animateur garde la main sur ses boutons. */
+.annonce{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;padding:24px}
+.annonce .bulle{max-width:min(1150px,94vw);text-align:center;background:rgba(9,14,26,.94);
+  border:3px solid var(--c,#f06c00);border-radius:24px;
+  padding:clamp(18px,4vh,44px) clamp(22px,5vw,64px);
+  box-shadow:0 30px 90px rgba(0,0,0,.72),0 0 0 6px rgba(255,255,255,.05);
+  animation:annonceIn .45s cubic-bezier(.2,1.5,.4,1)}
+.annonce.sort .bulle{animation:annonceOut .38s ease forwards}
+.annonce .k{font-family:var(--cond);font-size:clamp(.66rem,1.4vw,.85rem);font-weight:800;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--c,#f06c00)}
+.annonce .t{font-family:var(--cond);font-weight:800;text-transform:uppercase;line-height:1.03;
+  font-size:clamp(1.7rem,6.4vw,4.4rem);margin-top:8px}
+.annonce .s{margin-top:12px;font-size:clamp(.92rem,2.1vw,1.35rem);color:#cfd8ec;line-height:1.45}
+@keyframes annonceIn{0%{transform:scale(.5) rotate(-3deg);opacity:0}
+  60%{transform:scale(1.06) rotate(1.2deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes annonceOut{to{transform:scale(.86);opacity:0}}
+.blague{margin-top:14px;font-family:var(--cond);font-weight:800;text-transform:uppercase;
+  letter-spacing:.02em;line-height:1.1;font-size:clamp(1.1rem,3.2vw,1.9rem);color:var(--orange-l)}
+
+/* Avatars : image libre chargee depuis le reseau, pastille a l'initiale en
+   secours si elle ne se charge pas. */
+.av{position:relative;width:var(--av,34px);height:var(--av,34px);border-radius:50%;flex:none;
+  display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
+  background:linear-gradient(160deg,#2b3a5c,#1a2438);border:2px solid var(--line);
+  transition:border-color .2s,transform .25s,box-shadow .25s}
+.av::before{content:attr(data-ini);position:absolute;font-family:var(--cond);font-weight:800;
+  font-size:calc(var(--av,34px) * .45);color:var(--muted)}
+.av img{position:relative;width:100%;height:100%;display:block;object-fit:cover}
+.av img.ko{display:none}
+.av.h-good{border-color:var(--vert);box-shadow:0 0 0 3px rgba(46,204,113,.25);transform:scale(1.06)}
+.av.h-bad{border-color:var(--rouge);box-shadow:0 0 0 3px rgba(229,50,45,.22)}
+.av.h-bad img{filter:grayscale(.5)}
+.av.h-win{border-color:var(--jaune);box-shadow:0 0 0 4px rgba(245,179,1,.3);animation:sautille 1s ease-in-out infinite}
+@keyframes sautille{0%,100%{transform:translateY(0) scale(1.04)}50%{transform:translateY(-7px) scale(1.1)}}
+.av-tour{margin-right:2px}
+.eq-joueur .av{margin-right:1px}
+.chip .av{width:24px;height:24px;--av:24px}
+.avchoix{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:10px;margin-top:10px}
+.avchoix button{padding:4px;border-radius:14px;border:2px solid var(--line);background:rgba(255,255,255,.04);
+  display:flex;align-items:center;justify-content:center;transition:.15s}
+.avchoix button:hover{border-color:rgba(255,255,255,.4)}
+.avchoix button.pris{border-color:var(--orange);background:rgba(240,108,0,.16)}
+.avwin{display:flex;gap:14px;justify-content:center;margin:6px 0 2px}
+
+/* Studio de voix : une ligne par phrase du jeu, enregistrable au micro. */
+.stu-tete{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
+.stu-jauge{flex:1;min-width:150px;height:9px;border-radius:5px;background:rgba(255,255,255,.09);overflow:hidden}
+.stu-jauge i{display:block;height:100%;background:var(--vert);width:0;transition:width .3s}
+.stu-compte{font-family:var(--cond);font-weight:800;letter-spacing:.06em;white-space:nowrap}
+.stu-modes{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.stu-modes button{padding:7px 13px;border-radius:20px;border:1.5px solid var(--line);
+  background:rgba(255,255,255,.05);font-size:.84rem;font-weight:600;transition:.15s}
+.stu-modes button.on{border-color:var(--orange);background:rgba(240,108,0,.18);color:#fff}
+.stu-liste{max-height:48vh;overflow:auto;border:1px solid var(--line);border-radius:var(--r);
+  background:rgba(0,0,0,.18)}
+.stu-groupe{position:sticky;top:0;background:#141c2e;padding:8px 12px;font-family:var(--cond);
+  font-weight:800;text-transform:uppercase;letter-spacing:.13em;font-size:.76rem;color:var(--orange);
+  border-bottom:1px solid var(--line);z-index:2}
+.stu-l{display:flex;align-items:center;gap:9px;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.stu-l.vise{background:rgba(240,108,0,.15);box-shadow:inset 3px 0 0 var(--orange)}
+.stu-l.ok .stu-e{color:var(--vert)}
+.stu-l.enr{background:rgba(229,50,45,.16)}
+.stu-e{color:var(--muted);font-size:.95rem;width:14px;flex:none;text-align:center}
+.stu-t{flex:1;min-width:0;font-size:.9rem;line-height:1.3}
+.stu-l .btn{padding:5px 9px;font-size:.76rem;letter-spacing:.03em}
+.stu-l .btn.rouge{background:var(--rouge);border-color:var(--rouge);animation:pulse .8s infinite}
+.stu-pied{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.stu-alerte{border-radius:var(--r);padding:10px 14px;margin-top:12px;font-size:.88rem;
+  border:1px solid var(--rouge);background:rgba(229,50,45,.13)}
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--g,8px);
+  padding:calc(var(--g,8px) * 1.25);border-radius:16px;
+  background:linear-gradient(175deg,#25529e,#132a63);box-shadow:0 18px 50px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.14)}
+.cell{aspect-ratio:1;border-radius:50%;background:#0c1428;box-shadow:inset 0 5px 12px rgba(0,0,0,.65)}
+.cell.j{background:radial-gradient(circle at 34% 28%,var(--jaune-l),var(--jaune) 62%,#b98700);box-shadow:inset 0 -3px 8px rgba(0,0,0,.35)}
+.cell.r{background:radial-gradient(circle at 34% 28%,var(--rouge-l),var(--rouge) 62%,#8e1b17);box-shadow:inset 0 -3px 8px rgba(0,0,0,.35)}
+.cell.new{animation:fall .38s cubic-bezier(.3,1.4,.5,1)}
+.cell.win{animation:pulse 1s infinite;outline:4px solid #fff;outline-offset:-4px}
+@keyframes fall{from{transform:translateY(-330%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8)}}
+
+.panel{display:flex;flex-direction:column;gap:16px;min-width:0}
+.turn{border-radius:var(--rl);padding:16px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  border:2px solid var(--line);background:rgba(255,255,255,.04)}
+.turn.j{border-color:var(--jaune);background:linear-gradient(90deg,rgba(245,179,1,.20),rgba(245,179,1,.03))}
+.turn.r{border-color:var(--rouge);background:linear-gradient(90deg,rgba(229,50,45,.22),rgba(229,50,45,.03))}
+.turn .who{font-family:var(--cond);font-size:1.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;line-height:1.1}
+.turn .act{font-size:.92rem;color:var(--muted);margin-top:2px}
+.timer{margin-left:auto;font-family:var(--cond);font-weight:800;font-size:2rem;line-height:1;
+  min-width:66px;text-align:center;padding:7px 10px;border-radius:var(--r);background:rgba(0,0,0,.3)}
+.timer.low{color:var(--rouge);animation:pulse .6s infinite}
+
+.enig{background:var(--navy2);border:1px solid var(--line);border-radius:var(--rl);padding:20px}
+.enig .def{font-size:1.15rem;line-height:1.55;color:#e9eefb}
+.word{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.wl{width:clamp(28px,4.2vw,48px);height:clamp(36px,5.2vw,60px);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--cond);font-weight:800;font-size:clamp(1.2rem,2.9vw,2rem);
+  background:rgba(255,255,255,.07);border-bottom:3px solid var(--muted)}
+.wl.known{background:rgba(255,255,255,.14);border-bottom-color:var(--orange)}
+.wl.hit{background:var(--orange);border-bottom-color:#fff}
+.wl.pop{animation:pop .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes pop{0%{transform:scale(.4) translateY(-14px);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+.tray{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+.key{width:58px;height:58px;border-radius:var(--r);font-family:var(--cond);font-weight:800;font-size:1.6rem;
+  background:rgba(255,255,255,.09);border:1.5px solid var(--line);transition:.14s}
+.key:hover:not(:disabled){background:var(--orange);border-color:var(--orange);transform:translateY(-3px)}
+.key:disabled{cursor:not-allowed}
+.key.good{background:rgba(46,204,113,.22);border-color:var(--vert);color:var(--vert);opacity:.9}
+.key.bad{background:rgba(255,255,255,.03);color:#4d5872;text-decoration:line-through;opacity:.55}
+.key.locked{opacity:.4}
+.key.shown{background:rgba(255,255,255,.02);color:#6b7794;border-style:dashed;border-color:rgba(255,255,255,.16)}
+
+.flash{border-radius:var(--r);padding:12px 16px;font-weight:600;border:1px solid var(--line);background:rgba(255,255,255,.05)}
+.flash.good{border-color:var(--vert);background:rgba(46,204,113,.14)}
+.flash.bad{border-color:var(--rouge);background:rgba(229,50,45,.14)}
+.flash.info{border-color:var(--orange);background:rgba(240,108,0,.14)}
+
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sc{border-radius:var(--rl);padding:12px 16px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  display:flex;align-items:center;gap:12px}
+.sc .n{font-family:var(--cond);font-weight:800;font-size:2rem;line-height:1}
+.sc.j .n{color:var(--jaune)} .sc.r .n{color:var(--rouge)}
+.sc .who{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.roster{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;font-size:.85rem;font-weight:600;
+  background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.chip.j{border-color:rgba(245,179,1,.55)} .chip.r{border-color:rgba(229,50,45,.55)}
+.chip.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.chip.off{opacity:.4}
+
+.overlay{position:fixed;inset:0;background:rgba(6,10,20,.9);display:flex;align-items:center;justify-content:center;
+  z-index:60;padding:20px;backdrop-filter:blur(6px)}
+.overlay .card{max-width:640px;width:100%;text-align:center}
+.big{font-family:var(--cond);font-size:clamp(2.2rem,7vw,4rem);font-weight:800;text-transform:uppercase;line-height:1}
+.big.j{color:var(--jaune)} .big.r{color:var(--rouge)}
+
+.play{min-height:100dvh;display:flex;flex-direction:column}
+.play-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);
+  position:sticky;top:0;background:rgba(15,22,38,.92);backdrop-filter:blur(8px);z-index:20}
+.play-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px}
+.play .board{max-width:330px;margin:0 auto;width:100%}
+.play .key{width:clamp(46px,14.5vw,64px);height:clamp(46px,14.5vw,64px)}
+.play .colbtn{aspect-ratio:1.2;font-size:1.3rem}
+.teamchoice{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tc{border-radius:var(--rl);padding:22px 12px;text-align:center;font-family:var(--cond);font-weight:800;
+  text-transform:uppercase;letter-spacing:.06em;font-size:1.3rem;border:2px solid var(--line);transition:.18s}
+.tc.j{color:var(--jaune);border-color:rgba(245,179,1,.5);background:rgba(245,179,1,.09)}
+.tc.r{color:var(--rouge);border-color:rgba(229,50,45,.5);background:rgba(229,50,45,.09)}
+.tc:disabled{opacity:.3;cursor:not-allowed}
+.tc small{display:block;font-family:var(--font);font-size:.72rem;letter-spacing:.05em;color:var(--muted);margin-top:6px;font-weight:600}
+.waiting{text-align:center;padding:34px 16px;color:var(--muted)}
+.spin{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--orange);border-radius:50%;
+  margin:0 auto 14px;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.modal{position:fixed;inset:0;background:rgba(6,10,20,.88);z-index:70;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal .card{max-width:780px;width:100%;max-height:88dvh;overflow:auto;text-align:left}
+.modal textarea{width:100%;min-height:300px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88rem;line-height:1.65}
+
+@media (max-width:1100px){
+  .game{grid-template-columns:1fr}
+  #scr-host .cote{width:clamp(150px,17vw,230px)}
+  .lobby{grid-template-columns:1fr}
+  .qrbox{max-width:340px;margin:0 auto}
+}
+/* fenetre etroite : les trois colonnes ne tiennent plus, on empile */
+@media (max-width:860px){
+  #scr-host .milieu{flex-wrap:wrap}
+  #scr-host .cote{width:100%}
+  #scr-host .board-wrap{order:-1;height:min(60vh,70vw)}
+}
+@media (max-width:560px){
+  .slots{grid-template-columns:1fr}
+  .wrap{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ ACCUEIL ══════════════════ -->
+<section id="scr-home" class="screen on">
+  <div class="home">
+    <div style="text-align:center">
+      <div class="home-logo">Prevention Route</div>
+      <h1 class="h1" style="margin-top:6px">Puissance 4 des énigmes</h1>
+      <p class="sub" style="max-width:580px;margin:12px auto 0">
+        Deux équipes de deux joueurs. À chaque tour, le joueur actif cherche une lettre manquante
+        du mot mystère. Lettre trouvée, jeton posé. Quatre jetons alignés, la manche est gagnée.
+      </p>
+    </div>
+    <div class="home-cards">
+      <div class="card">
+        <div class="lbl">Animateur</div>
+        <div class="h2">Créer une session</div>
+        <p class="sub">Affichez cet écran au vidéoprojecteur. Les élèves scannent le QR code pour rejoindre la partie avec leur téléphone.</p>
+        <button class="btn" data-act="create">Créer la session</button>
+      </div>
+      <div class="card">
+        <div class="lbl">Participant</div>
+        <div class="h2">Rejoindre une partie</div>
+        <p class="sub">Saisissez le code affiché sur l’écran de l’animateur.</p>
+        <input class="field mono" id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off"
+               style="text-align:center;font-family:var(--cond);font-size:2rem;letter-spacing:.4em;font-weight:800">
+        <button class="btn ghost" data-act="join">Rejoindre</button>
+      </div>
+    </div>
+    <p class="sub" style="font-size:.8rem;opacity:.6">Outil pédagogique interne. Aucune donnée personnelle n’est enregistrée.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ ANIMATEUR ══════════════════ -->
+<section id="scr-host" class="screen">
+  <div class="topbar">
+    <div class="brand">Puissance 4 <b>des énigmes</b></div>
+    <div class="code-chip mono" id="hCode">----</div>
+    <div class="netpill"><span class="dot" id="hDot"></span><span id="hNet">connexion...</span></div>
+    <div class="spacer"></div>
+    <label class="opt" title="Temps laissé au joueur pour répondre, réglable à tout moment">
+      <span class="lbl">Temps de réponse</span>
+      <select id="selSecsTop" onchange="p4Secs(this.value)"></select>
+    </label>
+    <button class="btn ghost sm" data-act="son" id="btnSon">&#128266; Son</button>
+    <button class="btn ghost sm" data-act="voix" id="btnVoix">&#128483; Voix</button>
+    <button class="btn ghost sm" data-act="studio">&#127908; Ma voix</button>
+    <button class="btn ghost sm" data-act="enigmes">Mes énigmes</button>
+    <button class="btn ghost sm" data-act="fullscreen">Plein écran</button>
+    <button class="btn ghost sm" data-act="reset">Réinitialiser</button>
+  </div>
+  <div class="wrap" id="hostView"></div>
+</section>
+
+<!-- ══════════════════ JOUEUR ══════════════════ -->
+<section id="scr-play" class="screen">
+  <div class="play">
+    <div class="play-head">
+      <div style="font-family:var(--cond);font-weight:800;letter-spacing:.08em;text-transform:uppercase">Puissance 4</div>
+      <div class="spacer"></div>
+      <span id="pWho" style="font-size:.9rem;color:var(--muted)"></span>
+      <span class="dot" id="pDot"></span>
+    </div>
+    <div class="play-body" id="playView"></div>
+  </div>
+</section>
+
+<div id="modalHost"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▼▼▼   BLOC À PERSONNALISER : VOS ÉNIGMES   ▼▼▼
+
+   Un objet par ligne : le mot à faire deviner, puis sa définition.
+   Le mot doit faire entre 4 et 16 lettres ; les accents et les espaces
+   sont automatiquement ignorés dans le mot à trouver.
+
+   Série actuelle : réglementation sociale européenne, niveau difficile.
+   Vérifiez les énoncés avant une séance : la réglementation évolue.
+
+   Vous pouvez aussi coller votre propre liste depuis le bouton
+   « Mes énigmes » de l’écran animateur, sans modifier ce fichier.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var ENIGMES_PAR_DEFAUT = [
+  { mot:"TACHYGRAPHE",   def:"Appareil de contrôle qui enregistre vitesse, temps de conduite et temps de repos ; sa version intelligente équipe les véhicules neufs depuis août 2023." },
+  { mot:"INTERRUPTION",  def:"Après 4 h 30 de conduite : 45 minutes, ou 15 puis 30 minutes, dans cet ordre imposé." },
+  { mot:"AMPLITUDE",     def:"Temps écoulé entre la prise de service et la fin de service, repos journalier exclu." },
+  { mot:"HEBDOMADAIRE",  def:"Période sur laquelle la conduite est plafonnée à 56 heures, et à 90 heures sur deux d’affilée." },
+  { mot:"COMPENSATION",  def:"Récupération due après un repos hebdomadaire réduit, à prendre en bloc avant la fin de la troisième semaine qui suit." },
+  { mot:"DEROGATION",    def:"L’article 12 l’autorise pour rejoindre un point d’arrêt approprié, à condition de la justifier par écrit dès l’arrêt." },
+  { mot:"EQUIPAGE",      def:"En double, chaque conducteur doit prendre 9 heures de repos dans les 30 heures qui suivent la fin du repos précédent." },
+  { mot:"DISPONIBILITE", def:"Temps connu d’avance où le conducteur n’est pas à son poste mais reste joignable, comme l’accompagnement en double équipage." },
+  { mot:"QUOTIDIEN",     def:"Repos de 11 heures, que l’on peut fractionner en 3 heures puis 9 heures, dans cet ordre." },
+  { mot:"REDUIT",        def:"Qualifie le repos journalier de 9 heures, admis trois fois seulement entre deux repos hebdomadaires." },
+  { mot:"PROLONGEE",     def:"Qualifie la conduite journalière portée à 10 heures, deux fois par semaine au maximum." },
+  { mot:"CARTE",         def:"Support individuel valable cinq ans, à introduire avant la prise de service dans la fente de gauche." },
+  { mot:"MANUELLE",      def:"Saisie exigée à l’insertion pour couvrir la période écoulée depuis le dernier retrait." },
+  { mot:"FERRY",         def:"Traversée qui permet d’interrompre deux fois un repos journalier régulier, pour une heure au total." },
+  { mot:"ATTESTATION",   def:"Formulaire européen justifiant les journées sans conduite : congé, maladie ou autre travail." },
+  { mot:"SELECTEUR",     def:"Commande par laquelle le conducteur déclare travail, disponibilité ou repos." },
+  { mot:"ENTREPRISE",    def:"Elle détient la carte qui verrouille les données de ses véhicules et répond de l’organisation du travail." },
+  { mot:"TELECHARGEMENT",def:"Opération périodique de récupération des données de la carte conducteur et de la mémoire du véhicule." },
+  { mot:"INFRACTION",    def:"Un dépassement de plus de 20 pour cent de la conduite journalière la place dans la catégorie très grave." },
+  { mot:"CONTINUE",      def:"Qualifie la conduite maximale de 4 h 30 admise avant l’interruption obligatoire." }
+];
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▲▲▲   FIN DU BLOC À PERSONNALISER   ▲▲▲
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▼▼▼   ROUE BONUS   ▼▼▼
+
+   Un segment par entree, dans l'ordre d'affichage sur la roue. Les segments
+   sont repartis a parts egales. Cinq resultats sont disponibles :
+     'retirer' : vous retirez un jeton adverse du plateau
+     'subir'   : l'adversaire choisit un de vos jetons et le retire
+     'adv'     : l'equipe adverse passe son tour
+     'soi'     : votre propre equipe passe son tour
+     'rien'    : aucun effet, la main passe simplement a l'equipe adverse
+
+   Pour rendre la roue plus ou moins genereuse, ajoutez ou retirez des
+   segments (par exemple quatre 'retirer' et deux 'subir'). Deux segments
+   'rien' sur huit font une case blanche une fois sur quatre.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var ROUE = [
+  { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
+  { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' },
+  { res:'rien',    libelle:"Il y a rien à gratter, va voir ailleurs", couleur:'#7a869e' },
+  { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
+  { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' },
+  { res:'rien',    libelle:"Il y a rien à gratter, va voir ailleurs", couleur:'#7a869e' },
+  { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
+  { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' }
+];
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▼▼▼   PETITES PIQUES ET COMPLIMENTS   ▼▼▼
+
+   Tirees au sort par l'ecran animateur et envoyees a tout le monde, elles
+   s'affichent en grand quelques secondes. Ajoutez les votres librement, une
+   phrase par ligne, sans depasser une dizaine de mots pour rester lisible au
+   videoprojecteur.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var MOTS_RATE = [
+  "T’es nul ou quoi ?",
+  "Nan mais lâche le clavier",
+  "C’est quoi ça sérieux ?",
+  "Zéro. Pointé. Terminé.",
+  "Arrête, tu me fais mal aux yeux",
+  "La honte devant toute la salle",
+  "T’es sérieux là ? Sérieux ?",
+  "Bouge de là, tu bloques tout le monde",
+  "Réveille toi, on t’attend",
+  "Tu tapes au hasard, avoue",
+  "Même la roue se moque de toi",
+  "C’est mort, rentre chez toi",
+  "T’as pas révisé, ça se voit",
+  "Ton cerveau est en pause réglementaire",
+  "Chut, laisse parler les grands",
+  "Mais t’inventes des lettres",
+  "Rends le téléphone à ton binôme",
+  "T’es à côté de la plaque, carrément",
+  "Retourne à l’auto école, vas y",
+  "Bon pour la casse, appelez la dépanneuse",
+  "Nul, mais genre vraiment nul",
+  "Ça pique les yeux, arrête",
+  "T’as le cerveau en roue libre",
+  "Tu joues avec les pieds",
+  "Sors du terrain, tu gênes",
+  "Boum. Sortie de route.",
+  "Mais tu vises quoi là ?",
+  "Ta réponse a fini dans le fossé",
+  "Alors là c’est la catastrophe",
+  "Il est complètement perdu",
+  "Zéro talent, zéro chance, bravo",
+  "Tu veux un indice ou un taxi ?"
+];
+var MOTS_TROUVE = [
+  "C’est propre ça !",
+  "Vas y tranquille, il assure",
+  "Le boss, rien de moins",
+  "Là t’es chaud, continue",
+  "Il a mis tout le monde d’accord",
+  "Mais quel talent",
+  "C’est carré, rien à dire",
+  "Il est chaud bouillant",
+  "Là tu régales",
+  "Propre, net, sans bavure",
+  "Il rigole pas lui",
+  "Respect",
+  "Il a trouvé les yeux fermés",
+  "Ça c’est du lourd",
+  "Il est en feu, poussez vous",
+  "Continue comme ça",
+  "Cerveau branché sur secteur",
+  "Trop fort, franchement",
+  "L’autre équipe fait la tête",
+  "Chapeau l’artiste",
+  "Il a le flair, ce joueur",
+  "Tu gères la boutique",
+  "Direct dans le mille",
+  "Il joue à la maison lui",
+  "Tranquille, il déroule",
+  "Ça sent le sans faute"
+];
+var MOTS_VICTOIRE = [
+  "C’est fini, rentrez chez vous",
+  "C’est plié, merci au revoir",
+  "Quelle démonstration",
+  "L’autre équipe a plus qu’à ranger",
+  "Ils ont roulé sur tout le monde",
+  "Les patrons du plateau",
+  "Trop facile, presque gênant",
+  "Ils ont mis la fessée",
+  "C’est notre terrain ici",
+  "Rideau. Merci d’être venus.",
+  "On encadre ça et on l’accroche au mur",
+  "Personne peut les tenir",
+  "Ils ont fini le travail",
+  "Podium, médaille et tour d’honneur",
+  "Ils étaient trop forts",
+  "L’autre équipe demande la revanche"
+];
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▲▲▲   FIN DU BLOC DES PIQUES   ▲▲▲
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▼▼▼   AVATARS   ▼▼▼
+
+   Images libres fournies par DiceBear, service gratuit et sans compte, style
+   avataaars publie sous licence libre. Chaque graine donne toujours le meme
+   personnage, et la bouche comme les yeux se pilotent par l'adresse : l'avatar
+   sourit sur une bonne lettre et fait la tete sur une mauvaise.
+
+   Pour changer la galerie, remplacez simplement les graines qui suivent par
+   les prenoms ou les mots de votre choix. Sans connexion internet, une
+   pastille coloree avec l'initiale prend le relais.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var AVATAR_BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
+var AVATARS = ['Karim','Sofia','Ryan','Lina','Yanis','Nour','Enzo','Maya',
+               'Ilyes','Sarah','Adam','Ines','Rayan','Jade','Bilal','Emma'];
+/* bouche, yeux et sourcils selon l'humeur du moment */
+var HUMEURS = {
+  neutre: 'mouth=default&eyes=default&eyebrows=defaultNatural',
+  good:   'mouth=smile&eyes=happy&eyebrows=raisedExcited',
+  bad:    'mouth=sad&eyes=cry&eyebrows=sadConcerned',
+  win:    'mouth=twinkle&eyes=hearts&eyebrows=raisedExcited'
+};
+var AVATAR_FOND = 'b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf';
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▲▲▲   FIN DU BLOC AVATARS   ▲▲▲
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ▲▲▲   FIN DU BLOC ROUE   ▲▲▲
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+var SUPA_URL = "https://kowcfxcoqovuxietyiku.supabase.co";
+var SUPA_KEY = "sb_publishable_bfWLSdrI979lmjCo1T7xYg_Kp6QqJVL";
+var URL_PUBLIQUE_PAR_DEFAUT = "https://prevention-route.org/puissance4.html";
+
+var ROWS = 6, COLS = 7;
+var ORDER = [['J',0],['R',0],['J',1],['R',1]];
+var NOM = { J:'JAUNE', R:'ROUGE' };
+var COULEUR_EQUIPE = { J:'#f5b301', R:'#e5322d' };
+var ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+/* Choix de temps de reponse offerts a l'animateur, en secondes. 0 = sans limite. */
+var TEMPS = [0,10,15,20,25,30,40,45,60,75,90,120];
+
+/* ───────────────────────── utilitaires ───────────────────────── */
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function uid(n){ var o=''; for(var i=0;i<n;i++) o += ALPHA[Math.floor(Math.random()*26)]; return o; }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function norm(w){ return String(w).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z]/g,''); }
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+/* Explosion de confettis au moment ou la roue devoile sa surprise.
+   Tout est dessine dans un canvas jetable, sans bibliotheque externe. */
+var confettisEnAttente = null, chuteAFaire = false;
+function pointConfettis(){
+  var el = document.querySelector('.roue-res') || document.querySelector('.roue-wrap');
+  if (el){
+    var r = el.getBoundingClientRect();
+    if (r.width) return [r.left + r.width / 2, r.top + r.height / 2];
+  }
+  return [window.innerWidth / 2, window.innerHeight / 2];
+}
+/* couleur : teinte dominante. plein : toute la page est arrosee, de haut en
+   bas, pendant plusieurs secondes. Sinon, simple gerbe partant de la roue. */
+function confettis(couleur, plein){
+  try{
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var vieux = document.querySelector('canvas.confettis');
+    if (vieux && vieux.parentNode) vieux.parentNode.removeChild(vieux);
+    var W = window.innerWidth, H = window.innerHeight;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var cv = document.createElement('canvas');
+    cv.className = 'confettis';
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    document.body.appendChild(cv);
+    var ctx = cv.getContext('2d');
+    ctx.scale(dpr, dpr);
+    var teintes = plein
+      ? [couleur, couleur, '#ffffff', '#ffd54a', '#2ecc71', '#4fc3f7', '#f06c00']
+      : [couleur, couleur, '#ffffff', '#ffd54a'];
+    var parts = [], i, a, v;
+
+    function morceau(o){
+      o.l = 4 + Math.random() * 7;
+      o.e = 1.5 + Math.random() * 3.5;
+      o.r = Math.random() * Math.PI;
+      o.vr = (Math.random() - 0.5) * 0.42;
+      o.c = teintes[Math.floor(Math.random() * teintes.length)];
+      return o;
+    }
+
+    if (plein){
+      /* rideau qui tombe sur toute la largeur, plus deux gerbes laterales */
+      for (i = 0; i < 320; i++){
+        parts.push(morceau({ mode:'chute', x:Math.random() * W,
+          y:-30 - Math.random() * H * 1.15,
+          vx:(Math.random() - 0.5) * 2.4, vy:2 + Math.random() * 4.5,
+          vmax:5 + Math.random() * 5, amp:0.5 + Math.random() * 1.7,
+          ph:Math.random() * 100, vie:330 + Math.random() * 150 }));
+      }
+      for (i = 0; i < 130; i++){
+        a = -Math.PI / 2 + (Math.random() - 0.5) * 1.15;
+        v = 13 + Math.random() * 20;
+        parts.push(morceau({ mode:'gerbe', x:(i % 2 ? W + 10 : -10), y:H * 0.92,
+          vx:Math.cos(a) * v * (i % 2 ? -1 : 1) + (i % 2 ? -9 : 9),
+          vy:Math.sin(a) * v, vie:150 + Math.random() * 90 }));
+      }
+    } else {
+      var pt = pointConfettis(), x = pt[0], y = pt[1];
+      for (i = 0; i < 140; i++){
+        a = Math.random() * Math.PI * 2;
+        v = 8 + Math.random() * 21;
+        parts.push(morceau({ mode:'gerbe', x:x, y:y,
+          vx:Math.cos(a) * v, vy:Math.sin(a) * v - 7, vie:60 + Math.random() * 45 }));
+      }
+    }
+
+    /* filet de securite : si l onglet passe en arriere plan, l animation est
+       gelee par le navigateur, on retire quand meme le canvas */
+    var menage = setTimeout(function(){ if (cv.parentNode) cv.parentNode.removeChild(cv); },
+                            plein ? 11000 : 4000);
+    var t = 0;
+    (function boucle(){
+      t++;
+      ctx.clearRect(0, 0, W, H);
+      var vivants = 0;
+      for (var j = 0; j < parts.length; j++){
+        var q = parts[j];
+        if (t > q.vie) continue;
+        if (q.mode === 'chute'){
+          q.vy = Math.min(q.vy + 0.11, q.vmax);
+          q.x += q.vx + Math.sin((t + q.ph) * 0.055) * q.amp;
+          q.y += q.vy;
+          if (q.y > H + 40){ q.vie = 0; continue; }
+        } else {
+          q.vx *= 0.985; q.vy = q.vy * 0.985 + 0.34;
+          q.x += q.vx; q.y += q.vy;
+        }
+        vivants++;
+        q.r += q.vr;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(1, (1 - t / q.vie) * 3));
+        ctx.translate(q.x, q.y);
+        ctx.rotate(q.r);
+        ctx.fillStyle = q.c;
+        ctx.fillRect(-q.l, -q.e, q.l * 2, q.e * 2);
+        ctx.restore();
+      }
+      if (vivants) return requestAnimationFrame(boucle);
+      clearTimeout(menage);
+      if (cv.parentNode) cv.parentNode.removeChild(cv);
+    })();
+  }catch(e){}
+}
+
+/* Annonce plein ecran, lisible depuis le fond de la salle. Elle disparait
+   seule et laisse passer les clics. */
+var annonceEnAttente = null, annonceTimer = null, annonceMenage = null;
+function annonce(a){
+  try{
+    if (!a || !a.titre) return;
+    if (annonceTimer){ clearTimeout(annonceTimer); annonceTimer = null; }
+    if (annonceMenage){ clearTimeout(annonceMenage); annonceMenage = null; }
+    var vieille = document.querySelector('.annonce');
+    if (vieille && vieille.parentNode) vieille.parentNode.removeChild(vieille);
+    var d = document.createElement('div');
+    d.className = 'annonce';
+    d.innerHTML = '<div class="bulle" style="--c:' + (a.couleur || '#f06c00') + '">'
+      + (a.chapeau ? '<div class="k">' + esc(a.chapeau) + '</div>' : '')
+      + '<div class="t">' + esc(a.titre) + '</div>'
+      + (a.texte ? '<div class="s">' + a.texte + '</div>' : '')
+      + '</div>';
+    document.body.appendChild(d);
+    annonceTimer = setTimeout(function(){
+      d.classList.add('sort');
+      annonceMenage = setTimeout(function(){
+        if (d.parentNode) d.parentNode.removeChild(d);
+      }, 400);
+    }, a.duree || 2800);
+  }catch(e){}
+}
+/* ── Avatars ────────────────────────────────────────────────────────────────
+   L'adresse porte la graine du personnage et l'expression du moment, donc
+   une bonne lettre suffit a faire sourire l'avatar du joueur. */
+function graineAvatar(p){
+  if (!p) return AVATARS[0];
+  var i = (typeof p.av === 'number') ? p.av : 0;
+  return AVATARS[((i % AVATARS.length) + AVATARS.length) % AVATARS.length];
+}
+function avatarSrc(graine, humeur){
+  return AVATAR_BASE + '?seed=' + encodeURIComponent(graine)
+    + '&' + (HUMEURS[humeur] || HUMEURS.neutre)
+    + '&radius=50&backgroundColor=' + AVATAR_FOND;
+}
+/* humeur du joueur : il jubile s'il vient de gagner la manche, sourit sur sa
+   bonne lettre, tire la tete sur sa mauvaise lettre */
+function humeurDe(st, p){
+  if (!p) return 'neutre';
+  if (st.phase === 'over' && st.winner === p.team) return 'win';
+  if (st.blague && st.blague.pid === p.pid) return st.blague.k === 'win' ? 'win' : st.blague.k;
+  return 'neutre';
+}
+function avatarHTML(p, humeur, taille, classe){
+  var g = graineAvatar(p);
+  var ini = esc(String((p && p.name) || '?').trim().charAt(0).toUpperCase() || '?');
+  return '<span class="av ' + (classe || '') + ' h-' + (humeur || 'neutre') + '"'
+    + ' style="--av:' + (taille || 34) + 'px" data-ini="' + ini + '">'
+    + '<img src="' + esc(avatarSrc(g, humeur)) + '" alt="" loading="eager"'
+    + ' onerror="this.classList.add(\'ko\')"></span>';
+}
+/* les quatre expressions sont mises en cache des l'arrivee du joueur, pour que
+   le sourire apparaisse sans temps de chargement */
+var avatarsCharges = {};
+function prechargerAvatars(st){
+  if (!st || !st.players) return;
+  st.players.forEach(function(p){
+    var g = graineAvatar(p);
+    ['neutre','good','bad','win'].forEach(function(h){
+      var u = avatarSrc(g, h);
+      if (avatarsCharges[u]) return;
+      avatarsCharges[u] = true;
+      try{ var im = new Image(); im.src = u; }catch(e){}
+    });
+  });
+}
+
+/* ── Voix de synthese ───────────────────────────────────────────────────────
+   Elle lit les piques et le resultat de la roue sur l'ecran animateur, celui
+   qui est branche au videoprojecteur. Les telephones restent muets, sinon
+   quatre voix parleraient en meme temps. */
+/* mode : 'mixte' votre voix puis la synthese en secours, 'perso' votre voix
+   seulement, 'synthese' la voix de l'ordinateur seulement */
+var voix = { actif:true, choisie:null, prete:false, mode:'mixte' };
+function chargerVoix(){
+  try{
+    if (!window.speechSynthesis) return;
+    var liste = window.speechSynthesis.getVoices() || [];
+    var fr = [], i;
+    for (i = 0; i < liste.length; i++) if (/^fr/i.test(liste[i].lang || '')) fr.push(liste[i]);
+    var prefs = /denise|julie|hortense|charlotte|audrey|thomas|paul|google/i;
+    voix.choisie = null;
+    for (i = 0; i < fr.length; i++) if (prefs.test(fr[i].name || '')){ voix.choisie = fr[i]; break; }
+    if (!voix.choisie) voix.choisie = fr[0] || null;
+    voix.prete = !!liste.length;
+  }catch(e){}
+}
+/* ── Votre voix : clips enregistres au micro ────────────────────────────────
+   Chaque phrase du jeu porte une cle stable, calculee sur son texte. Le clip
+   est range dans la base locale du navigateur, donc il survit a la fermeture
+   de la page. L'export en fichier permet de le remettre sur un autre poste. */
+function cleVoix(t){
+  var s = String(t).normalize('NFD').replace(/[̀-ͯ]/g, '')
+            .toLowerCase().replace(/[^a-z0-9]/g, '');
+  /* les phrases commencaient autrefois par « wesh » : on ignore ce mot en tete
+     pour que les enregistrements deja faits restent reconnus */
+  s = s.replace(/^wesh/, '');
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) h = (((h * 33) ^ s.charCodeAt(i)) >>> 0);
+  return 'v' + h.toString(16) + '_' + s.length;
+}
+var VoixDB = (function(){
+  var base = null;
+  function ouvrir(){
+    return new Promise(function(res, rej){
+      if (base) return res(base);
+      if (!window.indexedDB) return rej(new Error('stockage indisponible'));
+      var r = indexedDB.open('p4voix', 1);
+      r.onupgradeneeded = function(){ r.result.createObjectStore('clips'); };
+      r.onsuccess = function(){ base = r.result; res(base); };
+      r.onerror = function(){ rej(r.error); };
+    });
+  }
+  function magasin(mode){
+    return ouvrir().then(function(d){
+      return d.transaction('clips', mode).objectStore('clips');
+    });
+  }
+  function promesse(req){
+    return new Promise(function(res, rej){
+      req.onsuccess = function(){ res(req.result); };
+      req.onerror = function(){ rej(req.error); };
+    });
+  }
+  return {
+    mettre: function(cle, valeur){ return magasin('readwrite').then(function(s){ return promesse(s.put(valeur, cle)); }); },
+    effacer: function(cle){ return magasin('readwrite').then(function(s){ return promesse(s.delete(cle)); }); },
+    vider: function(){ return magasin('readwrite').then(function(s){ return promesse(s.clear()); }); },
+    tout: function(){
+      return magasin('readonly').then(function(s){
+        return Promise.all([promesse(s.getAllKeys()), promesse(s.getAll())]).then(function(r){
+          var o = {};
+          for (var i = 0; i < r[0].length; i++) o[r[0][i]] = r[1][i];
+          return o;
+        });
+      });
+    }
+  };
+})();
+var clipsVoix = {};        /* cle -> adresse blob prete a jouer */
+var clipsTextes = {};      /* cle -> phrase enregistree, pour l'export */
+var lecteurVoix = null;
+function chargerClips(){
+  return VoixDB.tout().then(function(o){
+    Object.keys(clipsVoix).forEach(function(c){ try{ URL.revokeObjectURL(clipsVoix[c]); }catch(e){} });
+    clipsVoix = {}; clipsTextes = {};
+    Object.keys(o).forEach(function(cle){
+      var v = o[cle];
+      var b = (v && v.b) ? v.b : v;
+      if (!b || !b.size) return;
+      clipsVoix[cle] = URL.createObjectURL(b);
+      clipsTextes[cle] = (v && v.t) || '';
+    });
+    return clipsVoix;
+  }).catch(function(){ return clipsVoix; });
+}
+function jouerClip(cle){
+  var u = clipsVoix[cle];
+  if (!u) return false;
+  try{
+    if (lecteurVoix){ try{ lecteurVoix.pause(); }catch(e){} }
+    lecteurVoix = new Audio(u);
+    lecteurVoix.volume = 1;
+    var p = lecteurVoix.play();
+    if (p && p.catch) p.catch(function(){});
+    return true;
+  }catch(e){ return false; }
+}
+
+function parler(texte, k){
+  if (!voix.actif || ROLE !== 'host' || !texte) return;
+  /* votre voix d'abord, la synthese ne sert que de secours */
+  if (voix.mode !== 'synthese' && jouerClip(cleVoix(texte))) return;
+  if (voix.mode === 'perso') return;
+  try{
+    if (!window.speechSynthesis) return;
+    if (!voix.prete) chargerVoix();
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(String(texte));
+    if (voix.choisie) u.voice = voix.choisie;
+    u.lang = 'fr-FR';
+    u.volume = 1;
+    /* on chambre plus vite et plus bas, on felicite plus haut */
+    u.rate  = k === 'bad' ? 1.18 : k === 'win' ? 1.02 : 1.1;
+    u.pitch = k === 'bad' ? 0.8  : k === 'win' ? 1.3  : 1.2;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function basculerVoix(){
+  voix.actif = !voix.actif;
+  lsSet('p4_voix', voix.actif ? '1' : '0');
+  if (!voix.actif){
+    if (window.speechSynthesis){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+    if (lecteurVoix){ try{ lecteurVoix.pause(); }catch(e){} }
+  }
+  majBoutonVoix();
+  if (voix.actif) parler('La voix est allumée', 'good');
+}
+function majBoutonVoix(){
+  var b = document.getElementById('btnVoix');
+  if (b) b.textContent = voix.actif ? '🗣 Voix' : '🔕 Voix coupée';
+}
+try{
+  if (window.speechSynthesis){
+    chargerVoix();
+    window.speechSynthesis.onvoiceschanged = chargerVoix;
+  }
+}catch(e){}
+
+var paroleEnAttente = null;
+function lancerParoleSiBesoin(){
+  if (!paroleEnAttente) return;
+  var p = paroleEnAttente; paroleEnAttente = null;
+  parler(p.t, p.k);
+}
+function lancerChuteSiBesoin(){ if (chuteAFaire){ chuteAFaire = false; sonChute(); } }
+function lancerConfettisSiBesoin(){
+  if (!confettisEnAttente) return;
+  var c = confettisEnAttente; confettisEnAttente = null;
+  if (typeof c === 'string') confettis(c, false);
+  else confettis(c.couleur, c.plein);
+}
+function lancerAnnonceSiBesoin(){
+  if (!annonceEnAttente) return;
+  var a = annonceEnAttente; annonceEnAttente = null;
+  annonce(a);
+}
+
+var audioCtx = null;
+/* ── Son : musique de fond en boucle et bruitage de la chute du jeton ──
+   Tout est synthétisé, aucun fichier à charger. */
+var son = { actif:true, minuteur:null, pas:0, gain:null };
+function audio(){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }catch(e){ return null; }
+}
+var ACCORDS = [
+  { basse:110.00, notes:[329.63, 440.00, 523.25] },   /* la mineur */
+  { basse: 87.31, notes:[349.23, 440.00, 523.25] },   /* fa majeur */
+  { basse:130.81, notes:[392.00, 523.25, 659.25] },   /* do majeur */
+  { basse: 98.00, notes:[391.99, 493.88, 587.33] }    /* sol majeur */
+];
+function noteDouce(freq, t, duree, vol, type){
+  var c = audio(); if (!c) return;
+  var o = c.createOscillator(), g = c.createGain();
+  o.type = type || 'sine';
+  o.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.08);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + duree);
+  o.connect(g); g.connect(son.gain || c.destination);
+  o.start(t); o.stop(t + duree + 0.05);
+}
+function musiqueDemarrer(){
+  if (!son.actif || son.minuteur) return;
+  var c = audio(); if (!c) return;
+  if (!son.gain){ son.gain = c.createGain(); son.gain.gain.value = 0.5; son.gain.connect(c.destination); }
+  var pas = function(){
+    var c2 = audio(); if (!c2) return;
+    var t = c2.currentTime + 0.03;
+    var acc = ACCORDS[Math.floor(son.pas / 4) % ACCORDS.length];
+    if (son.pas % 4 === 0) noteDouce(acc.basse, t, 1.9, 0.05, 'triangle');
+    noteDouce(acc.notes[son.pas % 3], t, 1.1, 0.018, 'sine');
+    son.pas++;
+  };
+  pas();
+  son.minuteur = setInterval(pas, 640);
+}
+function musiqueArreter(){ if (son.minuteur){ clearInterval(son.minuteur); son.minuteur = null; } }
+/* chute du jeton : glissando descendant puis choc au fond de la colonne */
+function sonChute(){
+  if (!son.actif) return;
+  var c = audio(); if (!c) return;
+  try{
+    var t = c.currentTime;
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(560, t);
+    o.frequency.exponentialRampToValueAtTime(95, t + 0.24);
+    g.gain.setValueAtTime(0.16, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 0.3);
+    var n = c.createBufferSource(), buf = c.createBuffer(1, Math.floor(c.sampleRate * 0.08), c.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+    n.buffer = buf;
+    var gn = c.createGain();
+    gn.gain.setValueAtTime(0.14, t + 0.22);
+    gn.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+    n.connect(gn); gn.connect(c.destination); n.start(t + 0.22);
+  }catch(e){}
+}
+function basculerSon(){
+  son.actif = !son.actif;
+  lsSet('p4_son', son.actif ? '1' : '0');
+  if (son.actif){ if (ROLE === 'host' && S && S.phase === 'playing') musiqueDemarrer(); }
+  else musiqueArreter();
+  var b = document.getElementById('btnSon');
+  if (b) b.textContent = son.actif ? '\uD83D\uDD0A Son' : '\uD83D\uDD07 Muet';
+}
+function beep(kind){
+  if (!son.actif) return;
+  try{
+    audioCtx = audio();
+    if (!audioCtx) return;
+    var o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+    var f = kind === 'good' ? [660,990] : kind === 'win' ? [523,1175] : [240,150];
+    o.type = 'sine';
+    o.frequency.setValueAtTime(f[0], t);
+    o.frequency.exponentialRampToValueAtTime(f[1], t + 0.16);
+    g.gain.setValueAtTime(0.12, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+    o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + 0.34);
+  }catch(e){}
+}
+
+/* ───────────────────────── liste d’énigmes ───────────────────────── */
+function parseEnigmes(txt){
+  return String(txt).split('\n').map(function(l){
+    var i = l.indexOf('|'); if (i < 0) return null;
+    var mot = norm(l.slice(0,i)), def = l.slice(i+1).trim();
+    if (mot.length < 4 || mot.length > 16 || !def) return null;
+    return { mot:mot, def:def };
+  }).filter(Boolean);
+}
+function getEnigmes(){
+  var raw = lsGet('p4_enigmes');
+  if (raw){ var list = parseEnigmes(raw); if (list.length) return list; }
+  return ENIGMES_PAR_DEFAUT;
+}
+function enigmesEnTexte(list){ return list.map(function(e){ return e.mot + ' | ' + e.def; }).join('\n'); }
+
+/* ══════════════ RÉSEAU — canal public Supabase Realtime ══════════════ */
+var Net = (function(){
+  var client = null, ch = null, handler = null, statusCb = null, subscribed = false;
+  function boot(){
+    if (client) return client;
+    if (!window.supabase || !window.supabase.createClient) return null;
+    try{ client = window.supabase.createClient(SUPA_URL, SUPA_KEY, { realtime:{ params:{ eventsPerSecond:30 } } }); }
+    catch(e){ return null; }
+    return client;
+  }
+  function connect(code, onMsg, onStatus){
+    handler = onMsg; statusCb = onStatus;
+    if (!boot()){ statusCb && statusCb('NO_LIB'); return false; }
+    if (ch){ try{ client.removeChannel(ch); }catch(e){} ch = null; }
+    subscribed = false;
+    ch = client.channel('p4-' + code, { config:{ broadcast:{ self:false } } });
+    ch.on('broadcast', { event:'m' }, function(p){ try{ handler(p.payload); }catch(e){ console.error(e); } });
+    ch.subscribe(function(st){ subscribed = (st === 'SUBSCRIBED'); statusCb && statusCb(st); });
+    return true;
+  }
+  function send(payload){ if (!ch) return; try{ ch.send({ type:'broadcast', event:'m', payload:payload }); }catch(e){} }
+  function up(){ return subscribed; }
+  return { connect:connect, send:send, up:up };
+})();
+
+/* ══════════════ LOGIQUE DE JEU (autorité : écran animateur) ══════════════ */
+function emptyBoard(){
+  var b = []; for (var r=0;r<ROWS;r++){ var row=[]; for (var c=0;c<COLS;c++) row.push(null); b.push(row); } return b;
+}
+function newState(code){
+  return {
+    rev:0, code:code, phase:'lobby', players:[], board:emptyBoard(),
+    ver:5, turnTeam:'J', seat:{J:0,R:0}, step:'letter', enigme:null, used:[],
+    skip:{J:0,R:0}, roue:null, roueRes:null, roueNo:0, retrait:null, msgSaute:null,
+    blague:null, blagueNo:0,
+    score:{J:0,R:0}, manche:1, premier:'J',
+    winner:null, winCells:[], nulle:false,
+    turnSecs:30, remain:0, msg:null, lastDrop:null
+  };
+}
+function findPlayer(S,pid){ for (var i=0;i<S.players.length;i++) if (S.players[i].pid===pid) return S.players[i]; return null; }
+function seatPlayer(S,team,seat){ for (var i=0;i<S.players.length;i++){ var p=S.players[i]; if (p.team===team && p.seat===seat) return p; } return null; }
+function activePlayer(S){ return seatPlayer(S, S.turnTeam, S.seat[S.turnTeam]); }
+function activeTeam(S){ return S.turnTeam; }
+function autreEquipe(t){ return t === 'J' ? 'R' : 'J'; }
+/* siège occupé suivant, en tournant entre les deux coéquipiers */
+function siegeSuivant(S, t, cur){
+  for (var i=1;i<=2;i++){ var s=(cur+i)%2; if (seatPlayer(S,t,s)) return s; }
+  return cur;
+}
+function siegeValide(S, t, cur){ return seatPlayer(S,t,cur) ? cur : siegeSuivant(S,t,cur); }
+function teamCount(S,team){ return S.players.filter(function(p){ return p.team===team; }).length; }
+
+function buildEnigme(S){
+  var list = getEnigmes();
+  var pool = [];
+  for (var i=0;i<list.length;i++) if (S.used.indexOf(i) < 0) pool.push(i);
+  if (!pool.length){ S.used = []; for (var j=0;j<list.length;j++) pool.push(j); }
+  var idx = pool[Math.floor(Math.random()*pool.length)];
+  S.used.push(idx);
+  var src = list[idx];
+  var word = norm(src.mot);
+  var distinct = [];
+  word.split('').forEach(function(c){ if (distinct.indexOf(c) < 0) distinct.push(c); });
+  var k = Math.max(3, Math.min(5, Math.round(distinct.length * 0.5)));
+  k = Math.max(1, Math.min(k, distinct.length - 1));
+  var hidden = shuffle(distinct).slice(0, k);
+  /* les lettres deja affichees dans le mot restent visibles mais non cliquables */
+  var visible = distinct.filter(function(c){ return hidden.indexOf(c) < 0; });
+  return { def:src.def, word:word, hidden:hidden, visible:visible,
+           found:[], tried:[], tray:ALPHA.split('') };
+}
+function enigmeResolue(e){ return !!e && e.hidden.every(function(l){ return e.found.indexOf(l) >= 0; }); }
+
+/* ── Piques et compliments ──────────────────────────────────────────────────
+   L'ecran animateur tire la phrase et la range dans l'etat, pour que tous les
+   ecrans affichent exactement la meme. Le numero permet de ne l'animer qu'une
+   fois par ecran. */
+function piocher(liste, dernier){
+  if (liste.length < 2) return liste[0] || '';
+  var t;
+  do { t = liste[Math.floor(Math.random() * liste.length)]; } while (t === dernier);
+  return t;
+}
+function blaguer(S, k, liste, duree, pid){
+  S.blagueNo = (S.blagueNo || 0) + 1;
+  S.blague = { no:S.blagueNo, k:k, t:piocher(liste, S.blague && S.blague.t),
+               duree:duree || 2600, pid:pid || null };
+}
+
+/* La main passe systématiquement à l’équipe adverse ; à l’intérieur d’une
+   équipe, les deux coéquipiers jouent chacun leur tour. */
+function passerLaMain(S){
+  var t = S.turnTeam, autre = autreEquipe(t);
+  S.seat[t] = siegeSuivant(S, t, S.seat[t]);
+  if (teamCount(S, autre) > 0) S.turnTeam = autre;
+  S.seat[S.turnTeam] = siegeValide(S, S.turnTeam, S.seat[S.turnTeam]);
+}
+function advanceTurn(S){
+  passerLaMain(S);
+  S.msgSaute = null;
+  if (S.skip && S.skip[S.turnTeam] > 0){        /* tour bloque par la roue */
+    S.skip[S.turnTeam]--;
+    S.msgSaute = 'L’équipe ' + NOM[S.turnTeam] + ' est bloquée et passe son tour.';
+    passerLaMain(S);
+  }
+}
+/* fin de tour : on passe la main, on repasse en recherche de lettre et on
+   compose le message en tenant compte d’un eventuel tour saute. */
+function finTour(S, k, t){
+  S.retrait = null;
+  advanceTurn(S);
+  S.step = 'letter';
+  S.remain = S.turnSecs;
+  if (S.msgSaute) t = (t ? t + ' ' : '') + S.msgSaute;
+  S.msg = t ? { k:k || 'info', t:t } : null;
+}
+/* jeton le plus haut d’une colonne, seul jeton retirable */
+function sommet(S, col){ for (var r=0;r<ROWS;r++) if (S.board[r][col]) return r; return -1; }
+function peutRetirer(S, col, equipe){ var r = sommet(S, col); return r >= 0 && S.board[r][col] === equipe; }
+/* colonnes ou le jeton du dessus appartient a l'equipe visee par le retrait */
+function colonnesRetirables(S, cible){
+  cible = cible || (S.retrait ? S.retrait.cible : autreEquipe(activeTeam(S)));
+  var out = [];
+  for (var c=0;c<COLS;c++) if (peutRetirer(S, c, cible)) out.push(c);
+  return out;
+}
+function equipeVisee(S){ return S.retrait ? S.retrait.cible : autreEquipe(activeTeam(S)); }
+function dropInto(S,col,team){
+  for (var r=ROWS-1;r>=0;r--) if (!S.board[r][col]){ S.board[r][col]=team; return [r,col]; }
+  return null;
+}
+function colFree(S,col){ return S.board[0][col] === null; }
+function boardFull(S){ for (var c=0;c<COLS;c++) if (colFree(S,c)) return false; return true; }
+function checkWin(S,r,c,team){
+  var dirs = [[0,1],[1,0],[1,1],[1,-1]];
+  for (var d=0;d<dirs.length;d++){
+    var dr=dirs[d][0], dc=dirs[d][1], cells=[[r,c]];
+    for (var s=0;s<2;s++){
+      var sg = s ? -1 : 1, rr = r+dr*sg, cc = c+dc*sg;
+      while (rr>=0 && rr<ROWS && cc>=0 && cc<COLS && S.board[rr][cc]===team){ cells.push([rr,cc]); rr+=dr*sg; cc+=dc*sg; }
+    }
+    if (cells.length >= 4) return cells;
+  }
+  return null;
+}
+
+/* ══════════════ ÉTAT DE L’APPLICATION ══════════════ */
+var ROLE = null;       // 'host' | 'player'
+var S = null;          // état de jeu (autoritatif chez l’animateur, copie chez le joueur)
+var CODE = null;
+var MYPID = null;
+var lastStateAt = 0;
+var deny = null;
+var hostTimer = null, helloTimer = null, roueTimer = null;
+
+function show(id){
+  ['scr-home','scr-host','scr-play'].forEach(function(s){ document.getElementById(s).classList.toggle('on', s === id); });
+}
+function baseUrl(){
+  var custom = lsGet('p4_base');
+  if (custom) return custom;
+  if (location.protocol === 'http:' || location.protocol === 'https:') return location.origin + location.pathname;
+  return URL_PUBLIQUE_PAR_DEFAUT;
+}
+function joinUrl(){ return baseUrl() + '?s=' + CODE; }
+
+/* ══════════════ ANIMATEUR ══════════════ */
+function hostStart(code){
+  ROLE = 'host'; CODE = code;
+  if (helloTimer){ clearInterval(helloTimer); helloTimer = null; }
+  S = null;                       /* on repart d’un état neuf, même si cet onglet a déjà été joueur */
+  var saved = lsGet('p4_host_state');
+  if (saved){
+    try{ var st = JSON.parse(saved); if (st && st.code === code && st.ver === 5) S = st; }catch(e){}
+  }
+  if (!S) S = newState(code);
+  if (S.step === 'roue-anim'){ stopRoue(); roueTimer = setTimeout(appliquerRoue, 800); }
+  S.players.forEach(function(p){ if (!p.local) p.online = false; });
+  lsSet('p4_host_code', code);
+  /* si l’écran est rafraîchi par erreur, la session est reprise au lieu d’être perdue */
+  try{ history.replaceState(null, '', location.pathname + '?host=1'); }catch(e){}
+  son.actif = lsGet('p4_son') !== '0';
+  var bs = document.getElementById('btnSon');
+  if (bs) bs.textContent = son.actif ? '\uD83D\uDD0A Son' : '\uD83D\uDD07 Muet';
+  voix.actif = lsGet('p4_voix') !== '0';
+  voix.mode = lsGet('p4_voix_mode') || 'mixte';
+  chargerVoix();
+  chargerClips();
+  majBoutonVoix();
+  $('#hCode').textContent = code;
+  show('scr-host');
+  Net.connect(code, onHostMsg, hostNetStatus);
+  if (hostTimer) clearInterval(hostTimer);
+  hostTimer = setInterval(hostTick, 1000);
+  renderHost();
+}
+function hostNetStatus(st){
+  var ok = (st === 'SUBSCRIBED');
+  $('#hDot').className = 'dot ' + (ok ? 'ok' : 'ko');
+  $('#hNet').textContent = ok ? 'session en ligne' :
+    (st === 'NO_LIB' ? 'hors ligne (jeu sur cet écran)' : 'connexion...');
+  if (ok) push();
+}
+function saveHost(){ try{ lsSet('p4_host_state', JSON.stringify(S)); }catch(e){} }
+function push(){ S.rev++; saveHost(); Net.send({ ev:'state', s:S }); renderHost(); }
+
+function onHostMsg(m){
+  if (!m || ROLE !== 'host') return;
+  if (m.ev === 'hello'){
+    var hp = findPlayer(S, m.pid);
+    if (hp && !hp.online){ hp.online = true; push(); }   /* le téléphone est revenu */
+    else Net.send({ ev:'state', s:S });
+    return;
+  }
+  if (m.ev === 'join')  return hostJoin(m);
+  if (m.ev === 'letter') return hostLetter(m.pid, m.l);
+  if (m.ev === 'drop')   return hostDrop(m.pid, m.c);
+  if (m.ev === 'roue')   return hostRoue(m.pid);
+  if (m.ev === 'passe')  return hostPasse(m.pid);
+  if (m.ev === 'retire') return hostRetirer(m.pid, m.c);
+  if (m.ev === 'leave'){
+    var p = findPlayer(S, m.pid);
+    if (p && S.phase === 'lobby'){ S.players = S.players.filter(function(x){ return x.pid !== m.pid; }); push(); }
+  }
+}
+function hostJoin(m){
+  var name = String(m.name || '').trim().slice(0,18) || 'Joueur';
+  var team = (m.team === 'R') ? 'R' : 'J';
+  var p = findPlayer(S, m.pid);
+  if (p){ p.name = name; p.online = true; push(); return; }
+  if (S.phase !== 'lobby'){ Net.send({ ev:'deny', pid:m.pid, t:'La partie a déjà commencé.' }); return; }
+  var seat = !seatPlayer(S,team,0) ? 0 : (!seatPlayer(S,team,1) ? 1 : -1);
+  if (seat < 0){ Net.send({ ev:'deny', pid:m.pid, t:"L’équipe " + NOM[team] + ' est complète.' }); return; }
+  S.players.push({ pid:m.pid, name:name, team:team, seat:seat, online:true, local:false,
+                   av: avatarLibre(S, m.av) });
+  beep('good');
+  push();
+}
+/* avatar demande par le joueur, ou premier avatar encore libre de la galerie */
+function avatarLibre(S, souhaite){
+  var pris = S.players.map(function(p){ return p.av; });
+  var i = parseInt(souhaite, 10);
+  if (i >= 0 && i < AVATARS.length && pris.indexOf(i) < 0) return i;
+  for (var j = 0; j < AVATARS.length; j++) if (pris.indexOf(j) < 0) return j;
+  return Math.floor(Math.random() * AVATARS.length);
+}
+function hostAddLocal(team, seat){
+  var name = prompt('Prénom du joueur ' + NOM[team] + ' ' + (seat+1) + ' :', '');
+  if (name === null) return;
+  name = name.trim().slice(0,18) || ('Joueur ' + NOM[team] + ' ' + (seat+1));
+  if (seatPlayer(S,team,seat)) return;
+  S.players.push({ pid:'L-'+uid(5), name:name, team:team, seat:seat, online:true, local:true,
+                   av: avatarLibre(S, -1) });
+  push();
+}
+function hostKick(pid){
+  S.players = S.players.filter(function(p){ return p.pid !== pid; });
+  push();
+}
+function hostBegin(){
+  if (!teamCount(S,'J') || !teamCount(S,'R')) return;
+  S.phase = 'playing';
+  S.board = emptyBoard(); S.winner = null; S.winCells = []; S.nulle = false; S.lastDrop = null;
+  S.skip = {J:0,R:0}; S.roue = null; S.roueRes = null; S.retrait = null; S.msgSaute = null;
+  S.blague = null; stopRoue();
+  S.enigme = buildEnigme(S);
+  S.step = 'letter';
+  S.turnTeam = teamCount(S, S.premier) ? S.premier : autreEquipe(S.premier);
+  S.seat = { J:0, R:0 };
+  S.seat[S.turnTeam] = siegeValide(S, S.turnTeam, 0);
+  S.remain = S.turnSecs;
+  S.msg = { k:'info', t:'La partie commence. Équipe ' + NOM[activeTeam(S)] + ', à vous.' };
+  musiqueDemarrer();
+  push();
+}
+function hostNextManche(){
+  S.manche++;
+  S.premier = (S.premier === 'J') ? 'R' : 'J';
+  S.phase = 'playing';
+  S.board = emptyBoard(); S.winner = null; S.winCells = []; S.nulle = false; S.lastDrop = null;
+  S.skip = {J:0,R:0}; S.roue = null; S.roueRes = null; S.retrait = null; S.msgSaute = null;
+  S.blague = null; stopRoue();
+  S.enigme = buildEnigme(S);
+  S.step = 'letter';
+  S.turnTeam = teamCount(S, S.premier) ? S.premier : autreEquipe(S.premier);
+  S.seat = { J:0, R:0 };
+  S.seat[S.turnTeam] = siegeValide(S, S.turnTeam, 0);
+  S.remain = S.turnSecs;
+  S.msg = { k:'info', t:'Manche ' + S.manche + '. Équipe ' + NOM[activeTeam(S)] + ', à vous.' };
+  musiqueDemarrer();
+  push();
+}
+function hostReset(){
+  if (!confirm('Réinitialiser la partie ? Le plateau, les scores et les équipes seront remis à zéro.')) return;
+  var secs = S.turnSecs;
+  stopRoue();
+  musiqueArreter();
+  S = newState(CODE); S.turnSecs = secs;
+  push();
+}
+function hostLetter(pid, L){
+  if (S.phase !== 'playing' || S.step !== 'letter') return;
+  var ap = activePlayer(S);
+  if (!ap || ap.pid !== pid) return;
+  L = String(L || '').toUpperCase();
+  var e = S.enigme;
+  if (!e || ALPHA.indexOf(L) < 0 || e.tried.indexOf(L) >= 0) return;
+  S.roueRes = null;                                    /* la surprise precedente s'efface */
+  if (e.visible && e.visible.indexOf(L) >= 0) return;   /* lettre deja affichee dans le mot */
+  e.tried.push(L);
+  if (e.hidden.indexOf(L) >= 0){
+    e.found.push(L);
+    S.step = 'drop';
+    S.remain = S.turnSecs;
+    S.msg = { k:'good', t:esc(ap.name) + ' trouve le ' + L + ' : posez votre jeton !' };
+    blaguer(S, 'good', MOTS_TROUVE, 2600, ap.pid);
+    beep('good');
+  } else {
+    beep('bad');
+    blaguer(S, 'bad', MOTS_RATE, 3000, ap.pid);
+    finTour(S, 'bad', L + ' ne fait pas partie des lettres manquantes. La main passe à l’équipe adverse.');
+  }
+  push();
+}
+function hostDrop(pid, col, auto){
+  if (S.phase !== 'playing' || S.step !== 'drop') return;
+  var ap = activePlayer(S);
+  if (!ap || ap.pid !== pid) return;
+  col = parseInt(col,10);
+  if (!(col >= 0 && col < COLS) || !colFree(S,col)) return;
+  var cell = dropInto(S, col, ap.team);
+  if (!cell) return;
+  S.lastDrop = cell;
+  var win = checkWin(S, cell[0], cell[1], ap.team);
+  if (win){
+    S.phase = 'over'; S.winner = ap.team; S.winCells = win; S.score[ap.team]++;
+    S.msg = { k:'good', t:'Quatre jetons alignés : l’équipe ' + NOM[ap.team] + ' remporte la manche !' };
+    blaguer(S, 'win', MOTS_VICTOIRE, 5200, ap.pid);
+    beep('win'); push(); return;
+  }
+  var intro = auto ? 'Temps écoulé, jeton posé automatiquement. ' : '';
+  if (boardFull(S)){          /* plus de place : on repart d'un plateau vierge */
+    S.board = emptyBoard();
+    S.lastDrop = null;
+    intro += 'Plateau complet : les jetons sont retirés, la manche continue. ';
+  }
+  if (enigmeResolue(S.enigme)){
+    S.enigme = buildEnigme(S);
+    intro += 'Mot entièrement révélé, nouvelle énigme. ';
+  }
+  S.roue = null;
+  S.step = 'roue';
+  S.remain = S.turnSecs;
+  S.msg = { k:'info', t:intro + 'Tournez la roue, ou passez la main.' };
+  push();
+}
+
+/* ── Roue bonus ─────────────────────────────────────────────────────────── */
+function stopRoue(){ if (roueTimer){ clearTimeout(roueTimer); roueTimer = null; } }
+function hostRoue(pid){
+  if (S.phase !== 'playing' || S.step !== 'roue') return;
+  var ap = activePlayer(S);
+  if (!ap || ap.pid !== pid) return;
+  var i = Math.floor(Math.random() * ROUE.length);
+  S.roue = { i:i, res:ROUE[i].res };
+  S.step = 'roue-anim';
+  S.msg = { k:'info', t:'La roue tourne...' };
+  push();
+  stopRoue();
+  roueTimer = setTimeout(appliquerRoue, 3300);
+}
+function hostPasse(pid, auto){
+  if (S.phase !== 'playing' || S.step !== 'roue') return;
+  var ap = activePlayer(S);
+  if (!ap || ap.pid !== pid) return;
+  S.roue = null;
+  finTour(S, 'info', auto ? 'Temps écoulé : la roue n’a pas été tournée.' : 'La roue n’est pas tournée.');
+  push();
+}
+function appliquerRoue(){
+  roueTimer = null;
+  if (ROLE !== 'host' || !S || S.phase !== 'playing' || S.step !== 'roue-anim' || !S.roue) return;
+  var idx = S.roue.i, seg = ROUE[idx];
+  var equipe = activeTeam(S), adv = autreEquipe(equipe), res = seg.res;
+  var joueur = activePlayer(S);
+  S.roue = null;
+  var detail = '';
+  if (res === 'adv'){
+    S.skip[adv]++;
+    detail = 'L’équipe ' + NOM[adv] + ' saute son prochain tour, l’équipe ' + NOM[equipe] + ' rejoue.';
+    beep('good');
+    finTour(S, 'good', 'La roue joue en faveur de l’équipe ' + NOM[equipe] + ' !');
+  } else if (res === 'soi'){
+    S.skip[equipe]++;
+    detail = 'L’équipe ' + NOM[equipe] + ' sautera son prochain tour.';
+    beep('bad');
+    finTour(S, 'bad', 'La roue se retourne contre l’équipe ' + NOM[equipe] + '.');
+  } else if (res === 'rien'){
+    /* case blanche : le plateau ne bouge pas, la main passe normalement */
+    detail = 'Aucun effet sur le jeu. Le plateau reste tel quel, la main passe à l’équipe '
+           + NOM[adv] + '.';
+    beep('bad');
+    finTour(S, 'info', 'Case blanche : la roue ne donne rien à l’équipe ' + NOM[equipe] + '.');
+  } else {
+    /* 'retirer' : le joueur actif enleve un jeton adverse
+       'subir'   : c’est l’adversaire qui vient enlever un des siens */
+    var subi = (res === 'subir');
+    var cible = subi ? equipe : adv;
+    var choisit = subi ? (seatPlayer(S, adv, S.seat[adv]) || S.players.filter(function(x){ return x.team === adv; })[0]) : joueur;
+    var cs = colonnesRetirables(S, cible);
+    if (choisit && cs.length){
+      S.step = 'retirer';
+      S.retrait = { par: choisit.pid, cible: cible };
+      S.remain = S.turnSecs;
+      detail = esc(choisit.name) + ' choisit le jeton ' + NOM[cible] + ' à enlever.';
+      S.msg = { k: subi ? 'bad' : 'good',
+                t: subi ? ('Mauvaise pioche : ' + esc(choisit.name) + ' va retirer un jeton ' + NOM[cible] + '.')
+                        : ('Retrait accordé : choisissez un jeton ' + NOM[cible] + ' à enlever du plateau.') };
+      beep(subi ? 'bad' : 'good');
+    } else {
+      detail = 'Aucun jeton ' + NOM[cible] + ' n’est accessible : le retrait est perdu.';
+      finTour(S, 'info', 'Retrait sans effet : aucun jeton ' + NOM[cible] + ' n’est accessible.');
+    }
+  }
+  S.roueNo = (S.roueNo || 0) + 1;
+  S.roueRes = { no:S.roueNo, i:idx, res:res, libelle:seg.libelle, couleur:seg.couleur, detail:detail };
+  push();
+}
+function hostRetirer(pid, col, auto){
+  if (S.phase !== 'playing' || S.step !== 'retirer' || !S.retrait) return;
+  if (S.retrait.par !== pid) return;
+  col = parseInt(col,10);
+  var cible = S.retrait.cible;
+  if (!(col >= 0 && col < COLS) || !peutRetirer(S, col, cible)) return;
+  S.board[sommet(S, col)][col] = null;
+  S.lastDrop = null;
+  beep('good');
+  finTour(S, 'good', (auto ? 'Temps écoulé : ' : '') + 'un jeton ' + NOM[cible] + ' est retiré de la colonne ' + (col + 1) + '.');
+  push();
+}
+function hostTick(){
+  if (ROLE !== 'host' || !S) return;
+  if (S.phase !== 'playing' || !S.turnSecs || S.step === 'roue-anim'){ return; }
+  S.remain--;
+  if (S.remain > 0){
+    Net.send({ ev:'tick', r:S.remain });
+    var el = document.getElementById('timer');
+    if (el){ el.textContent = S.remain; el.className = 'timer' + (S.remain <= 5 ? ' low' : ''); }
+    return;
+  }
+  var ap = activePlayer(S);
+  if (ap && S.step === 'drop'){
+    var free = []; for (var c=0;c<COLS;c++) if (colFree(S,c)) free.push(c);
+    if (free.length){ hostDrop(ap.pid, free[Math.floor(Math.random()*free.length)], true); return; }
+  }
+  if (ap && S.step === 'roue'){ hostPasse(ap.pid, true); return; }
+  if (S.step === 'retirer' && S.retrait){
+    var cs = colonnesRetirables(S, S.retrait.cible);
+    if (cs.length){ hostRetirer(S.retrait.par, cs[Math.floor(Math.random()*cs.length)], true); return; }
+  }
+  beep('bad');
+  finTour(S, 'bad', 'Temps écoulé. La main passe à l’équipe adverse.');
+  push();
+}
+
+/* ══════════════ JOUEUR ══════════════ */
+function playerStart(code){
+  ROLE = 'player'; CODE = code;
+  if (hostTimer){ clearInterval(hostTimer); hostTimer = null; }
+  S = null; lastStateAt = 0;
+  MYPID = lsGet('p4_pid_' + code);
+  if (!MYPID){ MYPID = 'P-' + uid(6); lsSet('p4_pid_' + code, MYPID); }
+  show('scr-play');
+  Net.connect(code, onPlayerMsg, playerNetStatus);
+  if (helloTimer) clearInterval(helloTimer);
+  helloTimer = setInterval(function(){
+    if (Date.now() - lastStateAt > 4000) Net.send({ ev:'hello', pid:MYPID });
+    var stale = (Date.now() - lastStateAt > 9000);
+    $('#pDot').className = 'dot ' + (stale ? 'ko' : 'ok');
+  }, 2500);
+  Net.send({ ev:'hello', pid:MYPID });
+  renderPlay();
+}
+function playerNetStatus(st){
+  $('#pDot').className = 'dot ' + (st === 'SUBSCRIBED' ? 'ok' : 'ko');
+  if (st === 'SUBSCRIBED') Net.send({ ev:'hello', pid:MYPID });
+  if (st === 'NO_LIB') renderPlay();
+}
+function onPlayerMsg(m){
+  if (!m || ROLE !== 'player') return;
+  if (m.ev === 'state'){
+    var before = S;
+    /* même révision : simple accusé de présence, on ne redessine pas
+       (sinon la saisie en cours serait effacée à chaque battement). */
+    if (before && before.code === m.s.code && before.rev === m.s.rev){ lastStateAt = Date.now(); return; }
+    S = m.s; lastStateAt = Date.now(); deny = null;
+    if (before && S.msg && (!before.msg || before.msg.t !== S.msg.t) && me() && activePlayer(S) && activePlayer(S).pid === MYPID)
+      beep(S.msg.k === 'bad' ? 'bad' : 'good');
+    renderPlay();
+    return;
+  }
+  if (m.ev === 'tick' && S){
+    S.remain = m.r;
+    var el = document.getElementById('timer');
+    if (el){ el.textContent = m.r; el.className = 'timer' + (m.r <= 5 ? ' low' : ''); }
+    return;
+  }
+  if (m.ev === 'deny' && m.pid === MYPID){ deny = m.t; renderPlay(); }
+}
+function me(){ return S ? findPlayer(S, MYPID) : null; }
+/* avatar retenu par ce telephone, memorise d'une partie a l'autre */
+var monAvatar = (function(){
+  var v = parseInt(lsGet('p4_avatar'), 10);
+  return (v >= 0 && v < AVATARS.length) ? v : Math.floor(Math.random() * AVATARS.length);
+})();
+function choisirAvatar(i){
+  i = parseInt(i, 10);
+  if (!(i >= 0 && i < AVATARS.length)) return;
+  monAvatar = i;
+  lsSet('p4_avatar', String(i));
+  renderPlay();
+}
+function playerJoin(team){
+  var input = document.getElementById('pName');
+  var name = input ? input.value.trim() : '';
+  if (!name){ input && input.focus(); deny = 'Indiquez votre prénom avant de choisir une équipe.'; renderPlay(); return; }
+  lsSet('p4_name', name);
+  Net.send({ ev:'join', pid:MYPID, name:name, team:team, av:monAvatar });
+  deny = null;
+}
+function playerLeave(){
+  Net.send({ ev:'leave', pid:MYPID });
+  if (S){ S.players = S.players.filter(function(p){ return p.pid !== MYPID; }); renderPlay(); }
+}
+
+/* ══════════════ RENDU COMMUN ══════════════ */
+/* Les écrans sont redessinés à chaque mise à jour : on ne rejoue les
+   animations que lorsqu’un jeton ou une lettre vient réellement d’arriver. */
+var animJeton = '', animLettre = '', animSurprise = '', animBlague = '', animVictoire = '';
+function nouveautes(st){
+  var d = st.lastDrop ? st.lastDrop.join(',') : '';
+  var e = st.enigme;
+  var l = (e && e.found.length) ? e.word + ':' + e.found[e.found.length-1] : '';
+  var sp = st.roueRes ? ('t' + st.roueRes.no) : '';
+  var bl = st.blague ? ('b' + st.blague.no) : '';
+  var vi = (st.phase === 'over' && st.winner) ? ('m' + st.manche + st.winner) : '';
+  var f = { jeton: !!d && d !== animJeton, lettre: !!l && l !== animLettre,
+            surprise: !!sp && sp !== animSurprise,
+            blague: !!bl && bl !== animBlague,
+            victoire: !!vi && vi !== animVictoire };
+  animJeton = d; animLettre = l; animSurprise = sp; animBlague = bl; animVictoire = vi;
+  return f;
+}
+/* Prepare ce qui doit eclater a l'ecran : annonce en grand et confettis.
+   Appelee par les deux rendus, animateur et joueur. */
+function preparerEffets(st, anim){
+  if (anim.victoire && st.winner){
+    /* toute la page est arrosee de confettis ; le panneau de fin de manche
+       porte deja le nom de l'equipe et la pique, inutile de le recouvrir
+       d'une annonce qui masquerait le score */
+    confettisEnAttente = { couleur: COULEUR_EQUIPE[st.winner] || '#f06c00', plein:true };
+    if (st.blague && st.blague.k === 'win') paroleEnAttente = { t:st.blague.t, k:'win' };
+    return;
+  }
+  if (anim.surprise && st.roueRes){
+    confettisEnAttente = { couleur: st.roueRes.couleur, plein:false };
+    annonceEnAttente = { chapeau:'Roue bonus', titre: st.roueRes.libelle,
+      texte: st.roueRes.detail || '', couleur: st.roueRes.couleur, duree:4400 };
+    paroleEnAttente = { t:st.roueRes.libelle, k:st.roueRes.res === 'retirer' ? 'good' : 'bad' };
+    return;
+  }
+  if (anim.blague && st.blague && st.blague.k !== 'win'){
+    annonceEnAttente = { chapeau: st.blague.k === 'good' ? 'Bonne lettre' : 'Raté',
+      titre: st.blague.t,
+      couleur: st.blague.k === 'good' ? '#2ecc71' : '#e5322d',
+      duree: st.blague.duree || 2600 };
+    paroleEnAttente = { t:st.blague.t, k:st.blague.k };
+  }
+}
+/* mode : 'drop' pour poser un jeton, 'retirer' pour en enlever un a l'adversaire */
+function boardHTML(st, mode, colsEnabled, anim){
+  var h = '';
+  if (mode){
+    var adv = (mode === 'retirer') ? equipeVisee(st) : autreEquipe(activeTeam(st));
+    h += '<div class="cols">';
+    for (var c=0;c<COLS;c++){
+      var ok = (mode === 'retirer') ? peutRetirer(st, c, adv) : colFree(st, c);
+      h += '<button class="colbtn' + (mode === 'retirer' ? ' retire' : '') + '" data-col="' + c + '"'
+         + ((colsEnabled && ok) ? '' : ' disabled') + '>' + (mode === 'retirer' ? '&times;' : '&#9660;') + '</button>';
+    }
+    h += '</div>';
+  }
+  h += '<div class="board">';
+  for (var r=0;r<ROWS;r++) for (var k=0;k<COLS;k++){
+    var v = st.board[r][k], cls = 'cell' + (v ? ' ' + v.toLowerCase() : '');
+    if (anim && st.lastDrop && st.lastDrop[0] === r && st.lastDrop[1] === k) cls += ' new';
+    if (st.winCells && st.winCells.some(function(x){ return x[0] === r && x[1] === k; })) cls += ' win';
+    h += '<div class="' + cls + '"></div>';
+  }
+  return h + '</div>';
+}
+function wordHTML(e, anim){
+  var derniere = e.found.length ? e.found[e.found.length - 1] : null;
+  return '<div class="word">' + e.word.split('').map(function(ch){
+    var hid = e.hidden.indexOf(ch) >= 0, fnd = e.found.indexOf(ch) >= 0;
+    if (!hid) return '<div class="wl known">' + ch + '</div>';
+    if (fnd)  return '<div class="wl hit' + (anim && ch === derniere ? ' pop' : '') + '">' + ch + '</div>';
+    return '<div class="wl"></div>';
+  }).join('') + '</div>';
+}
+function trayHTML(e, enabled){
+  var visibles = e.visible || [];
+  return '<div class="tray">' + e.tray.map(function(L){
+    var dejaLa = visibles.indexOf(L) >= 0;
+    var tried = e.tried.indexOf(L) >= 0, good = e.found.indexOf(L) >= 0;
+    var cls = 'key' + (good ? ' good' : dejaLa ? ' shown' : tried ? ' bad' : (enabled ? '' : ' locked'));
+    var inactif = !enabled || tried || dejaLa;
+    return '<button class="' + cls + '" data-letter="' + L + '"' + (inactif ? ' disabled' : '') + '>' + L + '</button>';
+  }).join('') + '</div>';
+}
+function roueFond(){
+  var stops = ROUE.map(function(seg, i){
+    var a = i * (360 / ROUE.length), b = (i + 1) * (360 / ROUE.length);
+    return seg.couleur + ' ' + a + 'deg ' + b + 'deg';
+  });
+  return 'conic-gradient(' + stops.join(',') + ')';
+}
+function roueLegende(){
+  var vus = [], h = '';
+  ROUE.forEach(function(seg){
+    if (vus.indexOf(seg.res) >= 0) return;
+    vus.push(seg.res);
+    h += '<span><i style="background:' + seg.couleur + '"></i>' + esc(seg.libelle) + '</span>';
+  });
+  return '<div class="roue-legende">' + h + '</div>';
+}
+function roueBloc(st, monTour, compact, pop){
+  var pas = 360 / ROUE.length;
+  var anim = st.step === 'roue-anim' && st.roue;
+  var fin = anim ? (1440 - (st.roue.i * pas + pas / 2)) : 0;
+  /* apres le tirage la roue reste calee sur le segment sorti */
+  var fige = (!anim && st.roueRes && typeof st.roueRes.i === 'number')
+    ? ((1440 - (st.roueRes.i * pas + pas / 2)) % 360) : null;
+  var ap = activePlayer(st);
+  /* a l ecran animateur la place est comptee : la surprise prend celle de la roue */
+  var montreRoue = !(compact && st.roueRes);
+  var h = '<div class="roue-zone' + (compact ? ' compacte' : '') + '">'
+    + '<div class="lbl">Roue bonus</div>'
+    + (montreRoue ? '<div class="roue-wrap"><div class="roue-fleche"></div>'
+      + '<div class="roue' + (anim ? ' tourne' : '') + '" style="background:' + roueFond()
+      + (anim ? ';--fin:' + fin + 'deg' : (fige !== null ? ';transform:rotate(' + fige + 'deg)' : ''))
+      + '"></div></div>' : '');
+
+  if (st.roueRes){                                   /* la surprise tiree */
+    h += '<div class="roue-res' + (pop ? ' pop' : '') + '" style="--c:' + st.roueRes.couleur + '">'
+       + '<div class="roue-res-h">Surprise</div>'
+       + '<div class="roue-res-t">' + esc(st.roueRes.libelle) + '</div>'
+       + (st.roueRes.detail ? '<div class="roue-res-s">' + st.roueRes.detail + '</div>' : '')
+       + '</div>';
+  } else if (anim){
+    h += '<p class="sub">La roue tourne...</p>';
+  } else if (st.step === 'roue'){
+    h += monTour
+      ? '<div class="roue-actions">'
+          + '<button class="btn" data-act="roue">Tourner la roue</button>'
+          + '<button class="btn ghost" data-act="passe">Passer la main</button></div>'
+      : '<p class="sub"><b>' + (ap ? esc(ap.name) : 'Le joueur actif') + '</b> décide : tourner la roue ou passer la main.</p>';
+  } else {
+    h += '<p class="sub">Proposée après chaque jeton posé.</p>';
+  }
+  /* la legende reste lisible en permanence sur le telephone, et a l’ecran
+     animateur quand la roue est au repos */
+  if (!compact || (!st.roueRes && st.step !== 'roue' && !anim)) h += roueLegende();
+  return h + '</div>';
+}
+function turnHTML(st, msg){
+  var t = activeTeam(st), p = activePlayer(st);
+  var act = st.step === 'letter' ? 'Choisissez une lettre manquante du mot mystère'
+          : st.step === 'drop'   ? 'Lettre trouvée : posez un jeton dans une colonne'
+          : st.step === 'retirer'? (function(){
+              var q = st.retrait ? findPlayer(st, st.retrait.par) : null;
+              return (q ? esc(q.name) : 'Un joueur') + ' retire un jeton ' + NOM[equipeVisee(st)];
+            })()
+          : 'Roue bonus : tournez la roue ou passez la main';
+  if (msg) act = '<span class="act-msg ' + msg.k + '">' + msg.t + '</span>';
+  return '<div class="turn ' + t.toLowerCase() + '">'
+    + (p ? avatarHTML(p, humeurDe(st, p), 56, 'av-tour') : '')
+    + '<div><div class="who">' + (p ? esc(p.name) : 'Équipe ' + NOM[t]) + '</div>'
+    + '<div class="act">Équipe ' + NOM[t] + ' &middot; ' + act + '</div></div>'
+    + (st.turnSecs ? '<div class="timer' + (st.remain <= 5 ? ' low' : '') + '" id="timer">' + Math.max(0,st.remain) + '</div>' : '')
+    + '</div>';
+}
+function flashHTML(st){
+  if (!st.msg) return '';
+  return '<div class="flash ' + st.msg.k + '">' + st.msg.t + '</div>';
+}
+function scoresHTML(st){
+  return '<div class="scores">'
+    + '<div class="sc j"><span class="n">' + st.score.J + '</span><span class="who">Manches<br>Jaune</span></div>'
+    + '<div class="sc r"><span class="n">' + st.score.R + '</span><span class="who">Manches<br>Rouge</span></div>'
+    + '</div>';
+}
+function equipeHTML(st, t){
+  var ap = activePlayer(st), bas = t.toLowerCase();
+  var lignes = [0,1].map(function(seat){
+    var pl = seatPlayer(st, t, seat);
+    if (!pl) return '<div class="eq-joueur vide"><span class="num">' + (seat+1) + '</span>Place libre</div>';
+    var cls = 'eq-joueur' + (ap && ap.pid === pl.pid ? ' actif' : '') + (pl.online ? '' : ' hors');
+    return '<div class="' + cls + '">' + avatarHTML(pl, humeurDe(st, pl), 30)
+      + esc(pl.name) + (pl.local ? ' <small>(écran)</small>' : '') + '</div>';
+  }).join('');
+  return '<div class="equipe ' + bas + '">'
+    + '<div class="eq-tete"><span class="pip ' + bas + '"></span>Équipe ' + NOM[t]
+      + '<b>' + st.score[t] + '</b><small>manche' + (st.score[t] > 1 ? 's' : '') + '</small></div>'
+    + lignes
+  + '</div>';
+}
+/* les avatars de l'equipe qui vient de gagner, tout sourire */
+function avatarsEquipeHTML(st, team, taille){
+  var h = '';
+  [0,1].forEach(function(seat){
+    var p = seatPlayer(st, team, seat);
+    if (p) h += avatarHTML(p, 'win', taille || 84);
+  });
+  return h ? '<div class="avwin">' + h + '</div>' : '';
+}
+function rosterHTML(st){
+  var ap = activePlayer(st);
+  return '<div class="roster">' + ORDER.map(function(o){
+    var p = seatPlayer(st, o[0], o[1]);
+    if (!p) return '';
+    var cls = 'chip ' + o[0].toLowerCase() + (ap && ap.pid === p.pid ? ' active' : '') + (p.online ? '' : ' off');
+    return '<span class="' + cls + '">' + avatarHTML(p, humeurDe(st, p), 24)
+      + '<span class="pip ' + o[0].toLowerCase() + '" style="width:11px;height:11px"></span>'
+      + esc(p.name) + (p.local ? ' <small>(écran)</small>' : '') + '</span>';
+  }).join('') + '</div>';
+}
+
+/* ══════════════ RENDU ANIMATEUR ══════════════ */
+function renderHost(){
+  var v = $('#hostView');
+  v.innerHTML = (S.phase === 'lobby') ? hostLobbyHTML() : hostGameHTML();
+  ajusterPlateau();
+  prechargerAvatars(S);
+  lancerChuteSiBesoin();
+  lancerConfettisSiBesoin();
+  lancerAnnonceSiBesoin();
+  lancerParoleSiBesoin();
+  var selT = document.getElementById('selSecsTop');
+  if (selT){
+    if (!selT.options.length) selT.innerHTML = optionsTemps();
+    selT.value = String(S.turnSecs);
+  }
+  if (S.phase === 'lobby'){
+    var box = document.getElementById('qrbox');
+    if (box) box.innerHTML = makeQR(joinUrl()) || '<div style="color:#333;font-size:13px;padding:20px;line-height:1.5">QR code indisponible.<br>Utilisez l’adresse ci-dessous.</div>';
+  }
+}
+/* Les ecarts entre jetons sont poses en pixels : un pourcentage vertical se
+   resout mal quand la hauteur n'est pas connue d'avance, et les jetons
+   finissaient par deborder du cadre. */
+function calerPlateaux(){
+  try{
+    var boards = document.querySelectorAll('.board');
+    for (var i = 0; i < boards.length; i++){
+      var bd = boards[i], w = bd.getBoundingClientRect().width;
+      if (!w) continue;
+      var g = Math.max(2, Math.round(w * 0.019)) + 'px';
+      bd.style.setProperty('--g', g);
+      var cols = bd.parentNode ? bd.parentNode.querySelector('.cols') : null;
+      if (cols) cols.style.setProperty('--g', g);
+    }
+  }catch(e){}
+}
+/* Le plateau occupe le maximum de la zone centrale : on mesure sa proportion
+   reelle puis on fixe sa largeur pour qu'il tienne exactement en hauteur. */
+function ajusterPlateau(){
+  try{
+    /* la barre du haut peut changer de hauteur selon les boutons affiches */
+    var tb = document.querySelector('#scr-host .topbar'), scr = document.getElementById('scr-host');
+    if (tb && scr) scr.style.setProperty('--hh', (Math.ceil(tb.getBoundingClientRect().height) + 8) + 'px');
+    var wrap = document.querySelector('#scr-host .board-wrap');
+    if (!wrap) return;
+    var pl = wrap.querySelector('.plateau');
+    if (!pl) return;
+    /* deux passes : la proportion du plateau ne depend pas de sa taille, on
+       converge sans jamais elargir la page au passage */
+    for (var i = 0; i < 2; i++){
+      var dispoW = wrap.clientWidth, dispoH = wrap.clientHeight;
+      if (!dispoW || !dispoH) return;
+      var ratio = pl.offsetHeight / Math.max(1, pl.offsetWidth);
+      if (!(ratio > 0.1)) return;
+      var w = Math.min(dispoW, (dispoH - 2) / ratio);   /* 2 px pour les arrondis */
+      pl.style.setProperty('--bw', Math.max(150, Math.floor(w)) + 'px');
+      calerPlateaux();
+    }
+  }catch(e){}
+}
+window.addEventListener('resize', function(){
+  if (ROLE === 'host') ajusterPlateau(); else calerPlateaux();
+});
+
+function makeQR(url){
+  try{
+    if (typeof qrcode !== 'function') return '';
+    var q = qrcode(0, 'M'); q.addData(url); q.make();
+    return q.createSvgTag({ cellSize:4, margin:2, scalable:true });
+  }catch(e){ return ''; }
+}
+function hostLobbyHTML(){
+  var canStart = teamCount(S,'J') > 0 && teamCount(S,'R') > 0;
+  var slots = ['J','R'].map(function(t){
+    var rows = [0,1].map(function(seat){
+      var p = seatPlayer(S,t,seat);
+      if (p) return '<div class="slot taken"><span class="num">' + (seat+1) + '</span>' + esc(p.name)
+        + (p.local ? ' <span class="lbl" style="letter-spacing:.06em">écran</span>' : '')
+        + '<button class="x" data-act="kick" data-pid="' + p.pid + '" title="Retirer">&times;</button></div>';
+      return '<button class="slot" data-act="addlocal" data-team="' + t + '" data-seat="' + seat + '">'
+        + '<span class="num">' + (seat+1) + '</span>En attente d’un téléphone &middot; <u>ajouter sur cet écran</u></button>';
+    }).join('');
+    return '<div class="slot-col"><h3><span class="pip ' + t.toLowerCase() + '"></span>Équipe ' + NOM[t] + '</h3>' + rows + '</div>';
+  }).join('');
+
+  return '<div class="lobby">'
+    + '<div class="card" style="text-align:center">'
+      + '<div class="lbl" style="margin-bottom:12px">Scannez pour rejoindre</div>'
+      + '<div class="qrbox" id="qrbox"></div>'
+      + '<div class="joinurl">' + esc(joinUrl()) + '</div>'
+      + '<div style="margin-top:16px" class="lbl">ou code à saisir</div>'
+      + '<div class="bigcode mono">' + S.code + '</div>'
+      + '<button class="btn ghost sm" data-act="baseurl" style="margin-top:16px">Modifier l’adresse du jeu</button>'
+    + '</div>'
+    + '<div class="card">'
+      + '<div class="h2">Équipes</div>'
+      + '<p class="sub" style="margin:6px 0 16px">Deux joueurs par équipe. Les joueurs arrivent automatiquement dès qu’ils scannent le QR code. Vous pouvez aussi ajouter un joueur qui jouera directement depuis cet écran.</p>'
+      + '<div class="slots">' + slots + '</div>'
+      + '<div class="opts">'
+        + '<label class="opt">Temps de réponse par tour'
+          + '<select id="selSecs" onchange="p4Secs(this.value)">' + optionsTemps(S.turnSecs) + '</select>'
+        + '</label>'
+        + '<span class="sub" style="font-size:.82rem">Réglable aussi en cours de partie, depuis la barre du haut.</span>'
+        + '<div class="spacer"></div>'
+        + '<button class="btn" data-act="begin"' + (canStart ? '' : ' disabled') + '>Démarrer la partie</button>'
+      + '</div>'
+      + (canStart ? '' : '<p class="sub" style="margin-top:12px;color:var(--orange)">Il faut au moins un joueur dans chaque équipe pour démarrer.</p>')
+      + (S.score.J + S.score.R > 0 ? '<p class="sub" style="margin-top:12px">Score en cours : Jaune ' + S.score.J + ' &middot; Rouge ' + S.score.R + '</p>' : '')
+    + '</div>'
+  + '</div>';
+}
+function hostGameHTML(){
+  var ap = activePlayer(S);
+  var anim = nouveautes(S);
+  var mine = !!(ap && ap.local && S.phase === 'playing');
+  var clavier = mine && S.step === 'letter';
+  preparerEffets(S, anim);
+  if (anim.jeton) chuteAFaire = true;
+  var actionPlateau = (S.step === 'drop' || S.step === 'retirer');
+  var modePlateau = (S.step === 'retirer') ? 'retirer' : 'drop';
+  var qRetire = (S.step === 'retirer' && S.retrait) ? findPlayer(S, S.retrait.par) : null;
+  var plateauLocal = (S.step === 'retirer') ? !!(qRetire && qRetire.local) : mine;
+  var h = '<div class="game">'
+    + (S.phase === 'playing' ? turnHTML(S, S.msg) : '')
+    + (S.enigme ? '<div class="enig enig-haut">'
+        + '<span class="lbl">Énigme &middot; manche ' + S.manche + '</span>'
+        + '<span class="def">' + esc(S.enigme.def) + '</span>'
+        + wordHTML(S.enigme, anim.lettre)
+      + '</div>' : '')
+    + '<div class="milieu">'
+      + '<div class="cote cote-g">'
+        + equipeHTML(S, 'J')
+        + (S.enigme ? '<div class="traybloc"><div class="lbl" style="margin-bottom:8px">Alphabet'
+            + (clavier ? '' : ' <span style="opacity:.6">(réponse sur le téléphone)</span>')
+            + '</div>' + trayHTML(S.enigme, clavier) + '</div>' : '')
+      + '</div>'
+      + '<div class="board-wrap' + (actionPlateau ? '' : ' cols-caches') + '">'
+        + '<div class="plateau">' + boardHTML(S, modePlateau, plateauLocal && actionPlateau, anim.jeton) + '</div>'
+      + '</div>'
+      + '<div class="cote cote-d">'
+        + equipeHTML(S, 'R')
+        + '<div class="roue-col">' + roueBloc(S, mine && S.step === 'roue', true, anim.surprise) + '</div>'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+
+  if (S.phase === 'over'){
+    var t = S.winner;
+    h += '<div class="overlay"><div class="card">'
+      + (t ? '<div class="lbl">Manche ' + S.manche + '</div>' + avatarsEquipeHTML(S, t, 84)
+             + '<div class="big ' + t.toLowerCase() + '">Équipe ' + NOM[t] + '</div><div class="h2" style="margin-top:6px">remporte la manche</div>'
+           : '<div class="big">Manche nulle</div>')
+      + (t && S.blague && S.blague.k === 'win' ? '<div class="blague">' + esc(S.blague.t) + '</div>' : '')
+      + '<div style="margin:22px 0">' + scoresHTML(S) + '</div>'
+      + '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">'
+        + '<button class="btn" data-act="next">Manche suivante</button>'
+        + '<button class="btn ghost" data-act="tolobby">Revenir aux équipes</button>'
+      + '</div>'
+    + '</div></div>';
+  }
+  return h;
+}
+function p4Name(v){ lsSet('p4_name', String(v || '').slice(0,18)); }
+/* Liste des durees proposees. Sans argument, aucune option n'est pre-selectionnee :
+   la valeur courante est posee ensuite avec select.value. */
+function optionsTemps(courant){
+  return TEMPS.map(function(s){
+    return '<option value="' + s + '"' + (courant === s ? ' selected' : '') + '>'
+      + (s ? s + ' s' : 'sans limite') + '</option>';
+  }).join('');
+}
+function p4Secs(v){
+  if (!S) return;
+  S.turnSecs = parseInt(v,10) || 0;
+  if (S.phase === 'playing') S.remain = S.turnSecs;
+  push();
+}
+
+/* ══════════════ RENDU JOUEUR ══════════════ */
+function renderPlay(){
+  var v = $('#playView'), who = $('#pWho');
+  var p = me();
+  who.innerHTML = p
+    ? '<span class="tag ' + p.team.toLowerCase() + '" style="padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:.09em">'
+      + esc(p.name) + ' &middot; ' + NOM[p.team] + '</span>'
+    : (CODE ? 'code ' + CODE : '');
+
+  if (!S){
+    v.innerHTML = '<div class="waiting"><div class="spin"></div>'
+      + '<div class="h2">Connexion à la session ' + esc(CODE) + '</div>'
+      + '<p class="sub" style="margin-top:8px">Vérifiez que l’animateur a bien créé la session et que le code affiché à l’écran est <b>' + esc(CODE) + '</b>.</p>'
+      + (deny ? '<div class="flash bad" style="margin-top:16px">' + esc(deny) + '</div>' : '')
+      + '</div>';
+    return;
+  }
+  if (!p) return renderPlayLobby(v);
+  if (S.phase === 'lobby'){
+    v.innerHTML = '<div class="waiting"><div class="spin"></div>'
+      + '<div class="h2">Vous êtes dans l’équipe ' + NOM[p.team] + '</div>'
+      + '<p class="sub" style="margin-top:8px">La partie démarre dès que l’animateur lance le jeu.</p></div>'
+      + '<div class="card">' + rosterHTML(S) + '</div>'
+      + '<button class="btn ghost sm" data-act="leave" style="align-self:center">Changer d’équipe</button>';
+    return;
+  }
+  var ap = activePlayer(S);
+  var mine = !!(ap && ap.pid === MYPID && S.phase === 'playing');
+  var jeRetire = !!(S.step === 'retirer' && S.retrait && S.retrait.par === MYPID && S.phase === 'playing');
+  var anim = nouveautes(S);
+  preparerEffets(S, anim);
+  var h = '';
+  if (S.phase === 'over'){
+    h += '<div class="card" style="text-align:center">'
+      + (S.winner ? avatarsEquipeHTML(S, S.winner, 68)
+                    + '<div class="big ' + S.winner.toLowerCase() + '">Équipe ' + NOM[S.winner] + '</div><div class="h2">remporte la manche</div>'
+                  : '<div class="big">Manche nulle</div>')
+      + (S.winner && S.blague && S.blague.k === 'win' ? '<div class="blague">' + esc(S.blague.t) + '</div>' : '')
+      + '<p class="sub" style="margin-top:10px">En attente de l’animateur pour la manche suivante.</p></div>';
+  } else {
+    h += turnHTML(S);
+  }
+  h += flashHTML(S);
+  if (S.phase === 'playing' && (S.step === 'roue' || S.step === 'roue-anim' || S.roueRes)){
+    h += '<div class="card">' + roueBloc(S, mine && S.step === 'roue', false, anim.surprise) + '</div>';
+  }
+  if (S.enigme){
+    h += '<div class="enig"><div class="lbl">Énigme</div>'
+      + '<div class="def" style="margin-top:8px;font-size:1rem">' + esc(S.enigme.def) + '</div>'
+      + wordHTML(S.enigme, anim.lettre) + '</div>';
+    if (S.phase === 'playing'){
+      if (mine && S.step === 'letter'){
+        h += '<div><div class="lbl" style="margin-bottom:8px">À vous : trouvez une lettre manquante</div>' + trayHTML(S.enigme, true) + '</div>';
+      } else if (mine && S.step === 'drop'){
+        h += '<div><div class="lbl" style="margin-bottom:8px">Posez votre jeton</div>' + boardHTML(S, 'drop', true, anim.jeton) + '</div>';
+      } else if (jeRetire){
+        h += '<div><div class="lbl" style="margin-bottom:8px">Retirez un jeton ' + NOM[equipeVisee(S)] + '</div>'
+           + boardHTML(S, 'retirer', true, anim.jeton) + '</div>';
+      } else {
+        h += '<div><div class="lbl" style="margin-bottom:8px">Lettres disponibles</div>' + trayHTML(S.enigme, false) + '</div>';
+      }
+    }
+  }
+  if (!((mine && S.step === 'drop') || jeRetire)) h += '<div>' + boardHTML(S, null, false, anim.jeton) + '</div>';
+  h += rosterHTML(S);
+  v.innerHTML = h;
+  calerPlateaux();
+  prechargerAvatars(S);
+  lancerConfettisSiBesoin();
+  lancerAnnonceSiBesoin();
+  paroleEnAttente = null;   /* seul l'ecran animateur parle */
+}
+function renderPlayLobby(v){
+  var full = { J: teamCount(S,'J') >= 2, R: teamCount(S,'R') >= 2 };
+  var started = S.phase !== 'lobby';
+  v.innerHTML = '<div class="card">'
+      + '<div class="lbl">Session ' + esc(S.code) + '</div>'
+      + '<div class="h2" style="margin:6px 0 14px">Rejoindre la partie</div>'
+      + '<input class="field" id="pName" maxlength="18" placeholder="Votre prénom" autocomplete="off" oninput="p4Name(this.value)" value="' + esc(lsGet('p4_name') || '') + '">'
+      + '<p class="lbl" style="margin:18px 0 0">Choisissez votre avatar</p>'
+      + '<p class="sub" style="font-size:.82rem;margin-top:4px">Il vous représente à l’écran, et il sourit quand vous trouvez la bonne lettre.</p>'
+      + '<div class="avchoix">' + AVATARS.map(function(g, i){
+          var deja = S.players.filter(function(p){ return p.av === i; }).length > 0;
+          return '<button data-act="avatar" data-av="' + i + '"'
+            + (i === monAvatar ? ' class="pris"' : '') + (deja ? ' disabled title="Déjà pris"' : '')
+            + ' style="' + (deja ? 'opacity:.25' : '') + '">'
+            + '<span class="av" style="--av:46px" data-ini="?"><img src="' + esc(avatarSrc(g, i === monAvatar ? 'good' : 'neutre'))
+            + '" alt="" onerror="this.classList.add(\'ko\')"></span></button>';
+        }).join('') + '</div>'
+      + '<p class="lbl" style="margin:18px 0 10px">Choisissez votre équipe</p>'
+      + '<div class="teamchoice">'
+        + '<button class="tc j" data-act="team" data-team="J"' + ((full.J || started) ? ' disabled' : '') + '>Jaune<small>' + (2 - teamCount(S,'J')) + ' place(s)</small></button>'
+        + '<button class="tc r" data-act="team" data-team="R"' + ((full.R || started) ? ' disabled' : '') + '>Rouge<small>' + (2 - teamCount(S,'R')) + ' place(s)</small></button>'
+      + '</div>'
+      + (started ? '<div class="flash bad" style="margin-top:16px">La partie a déjà commencé. Attendez la manche suivante.</div>' : '')
+      + (deny ? '<div class="flash bad" style="margin-top:16px">' + esc(deny) + '</div>' : '')
+    + '</div>'
+    + '<div class="card">' + rosterHTML(S) + '</div>';
+}
+
+/* ══════════════ MODALE ÉNIGMES ══════════════ */
+function openEnigmes(){
+  var custom = lsGet('p4_enigmes');
+  var txt = custom || enigmesEnTexte(ENIGMES_PAR_DEFAUT);
+  $('#modalHost').innerHTML = '<div class="modal"><div class="card">'
+    + '<div class="h2">Mes énigmes</div>'
+    + '<p class="sub" style="margin:8px 0 14px">Une énigme par ligne, au format <b>MOT | définition</b>. '
+    + 'Le mot doit faire entre 4 et 16 lettres ; les accents et les espaces sont ignorés. '
+    + 'Votre liste est enregistrée dans ce navigateur.</p>'
+    + '<textarea class="field" id="enigTxt" spellcheck="false">' + esc(txt) + '</textarea>'
+    + '<div id="enigInfo" class="sub" style="margin-top:10px"></div>'
+    + '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">'
+      + '<button class="btn" data-act="enig-save">Enregistrer</button>'
+      + '<button class="btn ghost" data-act="enig-default">Revenir aux exemples</button>'
+      + '<div class="spacer"></div>'
+      + '<button class="btn ghost" data-act="enig-close">Fermer</button>'
+    + '</div></div></div>';
+  var ta = document.getElementById('enigTxt'), info = document.getElementById('enigInfo');
+  function count(){ info.textContent = parseEnigmes(ta.value).length + ' énigme(s) valide(s) sur ' + ta.value.split('\n').filter(function(l){ return l.trim(); }).length + ' ligne(s).'; }
+  ta.addEventListener('input', count); count();
+}
+function closeModal(){ studioLibererMicro(); $('#modalHost').innerHTML = ''; }
+
+/* ══════════════ STUDIO DE VOIX ══════════════
+   Toutes les phrases que le jeu prononce, enregistrables une par une au micro
+   de l'animateur. Les clips restent dans le navigateur et s'exportent en un
+   seul fichier pour etre repris sur un autre poste. */
+var studio = { flux:null, rec:null, morceaux:[], cible:null, chrono:null,
+               debut:0, index:0, plat:[], alerte:'' };
+var DUREE_MAX = 8000;
+
+function libellesRoue(){
+  var vus = [];
+  ROUE.forEach(function(s){ if (vus.indexOf(s.libelle) < 0) vus.push(s.libelle); });
+  return vus;
+}
+function catalogueVoix(){
+  var groupes = [
+    { titre:'Mauvaise lettre, les piques', liste:MOTS_RATE },
+    { titre:'Bonne lettre, les compliments', liste:MOTS_TROUVE },
+    { titre:'Victoire de la manche', liste:MOTS_VICTOIRE },
+    { titre:'Roue bonus, résultats annoncés', liste:libellesRoue() }
+  ];
+  var plat = [];
+  groupes.forEach(function(g){
+    g.liste.forEach(function(t){ plat.push({ cle:cleVoix(t), t:t }); });
+  });
+  studio.plat = plat;
+  return groupes;
+}
+function typeAudio(){
+  var essais = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'];
+  if (!window.MediaRecorder) return null;
+  for (var i = 0; i < essais.length; i++){
+    try{ if (MediaRecorder.isTypeSupported(essais[i])) return essais[i]; }catch(e){}
+  }
+  return '';
+}
+function studioMicro(){
+  if (studio.flux) return Promise.resolve(studio.flux);
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder)
+    return Promise.reject(new Error("Ce navigateur ne sait pas enregistrer. Ouvrez la page en https ou sur localhost, pas par double clic sur le fichier."));
+  return navigator.mediaDevices.getUserMedia({
+    audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true }
+  }).then(function(f){ studio.flux = f; return f; });
+}
+function studioLibererMicro(){
+  studioStop();
+  if (studio.flux){
+    try{ studio.flux.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
+    studio.flux = null;
+  }
+}
+function studioStop(){
+  if (studio.chrono){ clearInterval(studio.chrono); studio.chrono = null; }
+  if (studio.rec && studio.rec.state === 'recording'){ try{ studio.rec.stop(); }catch(e){} }
+}
+function studioEnregistrer(cle, texte, i){
+  if (studio.rec && studio.rec.state === 'recording'){ studioStop(); return; }
+  studio.index = (typeof i === 'number') ? i : studio.index;
+  studio.alerte = '';
+  studioMicro().then(function(flux){
+    var t = typeAudio();
+    studio.rec = t ? new MediaRecorder(flux, { mimeType:t }) : new MediaRecorder(flux);
+    studio.morceaux = [];
+    studio.cible = { cle:cle, t:texte };
+    studio.rec.ondataavailable = function(e){ if (e.data && e.data.size) studio.morceaux.push(e.data); };
+    studio.rec.onstop = function(){
+      if (studio.chrono){ clearInterval(studio.chrono); studio.chrono = null; }
+      var type = studio.rec.mimeType || 'audio/webm';
+      var blob = new Blob(studio.morceaux, { type:type });
+      var c = studio.cible; studio.cible = null; studio.rec = null;
+      if (!c || blob.size < 700){ studio.alerte = 'Enregistrement trop court, recommencez.'; rendreStudio(); return; }
+      VoixDB.mettre(c.cle, { t:c.t, b:blob }).then(function(){
+        if (clipsVoix[c.cle]){ try{ URL.revokeObjectURL(clipsVoix[c.cle]); }catch(e){} }
+        clipsVoix[c.cle] = URL.createObjectURL(blob);
+        clipsTextes[c.cle] = c.t;
+        if (studio.index < studio.plat.length - 1) studio.index++;   /* on avance tout seul */
+        rendreStudio();
+      }).catch(function(){ studio.alerte = "Enregistrement impossible à ranger dans le navigateur."; rendreStudio(); });
+    };
+    studio.rec.start();
+    studio.debut = Date.now();
+    rendreStudio();
+    studio.chrono = setInterval(function(){
+      var s = (Date.now() - studio.debut) / 1000;
+      var el = document.getElementById('stuChrono');
+      if (el) el.textContent = s.toFixed(1) + ' s';
+      if (s * 1000 >= DUREE_MAX) studioStop();
+    }, 100);
+  }).catch(function(err){
+    studio.alerte = err && err.message ? err.message : "Micro refusé ou indisponible.";
+    rendreStudio();
+  });
+}
+function studioSupprimer(cle){
+  VoixDB.effacer(cle).then(function(){
+    if (clipsVoix[cle]){ try{ URL.revokeObjectURL(clipsVoix[cle]); }catch(e){} }
+    delete clipsVoix[cle]; delete clipsTextes[cle];
+    rendreStudio();
+  });
+}
+function studioMode(m){
+  voix.mode = m;
+  lsSet('p4_voix_mode', m);
+  rendreStudio();
+}
+
+/* ── Export et import du paquet de voix ─────────────────────────────────── */
+function blobEnBase64(b){
+  return new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onload = function(){ var s = String(fr.result); res(s.slice(s.indexOf(',') + 1)); };
+    fr.onerror = function(){ rej(fr.error); };
+    fr.readAsDataURL(b);
+  });
+}
+function base64EnBlob(b64, type){
+  var bin = atob(b64), n = bin.length, u = new Uint8Array(n);
+  for (var i = 0; i < n; i++) u[i] = bin.charCodeAt(i);
+  return new Blob([u], { type:type || 'audio/webm' });
+}
+function telecharger(nom, contenu, type){
+  try{
+    var b = new Blob([contenu], { type:type || 'application/json' });
+    var u = URL.createObjectURL(b);
+    var a = document.createElement('a');
+    a.href = u; a.download = nom;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ if (a.parentNode) a.parentNode.removeChild(a); URL.revokeObjectURL(u); }, 2000);
+  }catch(e){ alert("Téléchargement impossible dans ce navigateur."); }
+}
+function studioExporter(){
+  VoixDB.tout().then(function(o){
+    var cles = Object.keys(o);
+    if (!cles.length){ alert('Aucune voix enregistrée pour le moment.'); return; }
+    return Promise.all(cles.map(function(cle){
+      var v = o[cle], b = (v && v.b) ? v.b : v;
+      return blobEnBase64(b).then(function(d){
+        return { cle:cle, t:(v && v.t) || '', m:b.type || 'audio/webm', d:d };
+      });
+    })).then(function(liste){
+      var paquet = { app:'puissance4', version:1, date:new Date().toISOString(), clips:liste };
+      telecharger('voix-puissance4.json', JSON.stringify(paquet));
+    });
+  }).catch(function(){ alert('Export impossible.'); });
+}
+function studioImporter(fichier){
+  if (!fichier) return;
+  var fr = new FileReader();
+  fr.onload = function(){
+    var paquet;
+    try{ paquet = JSON.parse(String(fr.result)); }
+    catch(e){ studio.alerte = 'Fichier illisible.'; rendreStudio(); return; }
+    var liste = (paquet && paquet.clips) || [];
+    if (!liste.length){ studio.alerte = 'Ce fichier ne contient aucune voix.'; rendreStudio(); return; }
+    Promise.all(liste.map(function(c){
+      return VoixDB.mettre(c.cle, { t:c.t || '', b:base64EnBlob(c.d, c.m) });
+    })).then(chargerClips).then(function(){
+      studio.alerte = '';
+      rendreStudio();
+      alert(liste.length + ' voix importée(s).');
+    }).catch(function(){ studio.alerte = 'Import impossible.'; rendreStudio(); });
+  };
+  fr.readAsText(fichier);
+}
+function studioToutEffacer(){
+  if (!confirm('Effacer tous vos enregistrements ? Le jeu repassera à la voix de synthèse.')) return;
+  VoixDB.vider().then(chargerClips).then(rendreStudio);
+}
+
+/* ── Affichage du studio ────────────────────────────────────────────────── */
+function ouvrirStudio(){
+  studio.index = 0;
+  studio.alerte = '';
+  chargerClips().then(function(){
+    /* on se pose sur la premiere phrase pas encore enregistree */
+    catalogueVoix();
+    for (var i = 0; i < studio.plat.length; i++){
+      if (!clipsVoix[studio.plat[i].cle]){ studio.index = i; break; }
+    }
+    rendreStudio();
+  });
+}
+function rendreStudio(){
+  var groupes = catalogueVoix();
+  var total = studio.plat.length, faits = 0;
+  studio.plat.forEach(function(p){ if (clipsVoix[p.cle]) faits++; });
+  var pct = total ? Math.round(faits * 100 / total) : 0;
+  var enCours = !!(studio.rec && studio.rec.state === 'recording');
+  var cleEnCours = enCours && studio.cible ? studio.cible.cle : null;
+
+  var n = 0, lignes = '';
+  groupes.forEach(function(g){
+    lignes += '<div class="stu-groupe">' + esc(g.titre) + '</div>';
+    g.liste.forEach(function(t){
+      var cle = cleVoix(t), ok = !!clipsVoix[cle], vise = (studio.index === n), rec = (cleEnCours === cle);
+      lignes += '<div class="stu-l' + (ok ? ' ok' : '') + (vise ? ' vise' : '') + (rec ? ' enr' : '') + '">'
+        + '<span class="stu-e">' + (ok ? '&#9679;' : '&#9675;') + '</span>'
+        + '<span class="stu-t">' + esc(t) + '</span>'
+        + (rec ? '<span class="stu-chrono" id="stuChrono">0.0 s</span>' : '')
+        + '<button class="btn sm' + (rec ? ' rouge' : ' ghost') + '" data-act="stu-rec" data-cle="' + cle
+          + '" data-i="' + n + '" data-t="' + esc(t) + '">' + (rec ? '&#9632; Stop' : '&#9679; Enregistrer') + '</button>'
+        + '<button class="btn ghost sm" data-act="stu-play" data-cle="' + cle + '"' + (ok ? '' : ' disabled') + '>&#9654;</button>'
+        + '<button class="btn ghost sm" data-act="stu-del" data-cle="' + cle + '"' + (ok ? '' : ' disabled') + '>&times;</button>'
+        + '</div>';
+      n++;
+    });
+  });
+
+  var modes = [['mixte','Ma voix, synthèse en secours'],['perso','Ma voix uniquement'],
+               ['synthese','Voix de synthèse uniquement']];
+  $('#modalHost').innerHTML = '<div class="modal"><div class="card">'
+    + '<div class="h2">Ma voix</div>'
+    + '<p class="sub" style="margin:8px 0 0">Enregistrez chaque phrase avec votre micro. Le jeu jouera '
+    + 'votre voix à la place de celle de l’ordinateur. Tout reste dans ce navigateur : pensez à exporter '
+    + 'votre paquet si vous animez depuis un autre poste.</p>'
+    + '<div class="stu-tete">'
+      + '<span class="stu-compte">' + faits + ' / ' + total + '</span>'
+      + '<div class="stu-jauge"><i style="width:' + pct + '%"></i></div>'
+      + '<span class="sub" style="font-size:.82rem">Espace enregistre ou arrête, flèches haut et bas pour changer de phrase.</span>'
+    + '</div>'
+    + '<div class="stu-modes">' + modes.map(function(m){
+        return '<button data-act="stu-mode" data-mode="' + m[0] + '"'
+          + (voix.mode === m[0] ? ' class="on"' : '') + '>' + m[1] + '</button>';
+      }).join('') + '</div>'
+    + (studio.alerte ? '<div class="stu-alerte">' + esc(studio.alerte) + '</div>' : '')
+    + '<div class="stu-liste" id="stuListe">' + lignes + '</div>'
+    + '<div class="stu-pied">'
+      + '<button class="btn ghost sm" data-act="stu-export">Exporter mes voix</button>'
+      + '<button class="btn ghost sm" data-act="stu-import">Importer un paquet</button>'
+      + '<input type="file" id="stuFichier" accept="application/json,.json" style="display:none">'
+      + '<button class="btn ghost sm" data-act="stu-clear">Tout effacer</button>'
+      + '<div class="spacer"></div>'
+      + '<button class="btn" data-act="enig-close">Fermer</button>'
+    + '</div></div></div>';
+
+  var f = document.getElementById('stuFichier');
+  if (f) f.addEventListener('change', function(){ studioImporter(this.files && this.files[0]); });
+  var vise = document.querySelector('.stu-l.vise');
+  if (vise && vise.scrollIntoView) vise.scrollIntoView({ block:'nearest' });
+}
+function studioDeplacer(d){
+  if (!studio.plat.length) return;
+  studio.index = Math.max(0, Math.min(studio.plat.length - 1, studio.index + d));
+  rendreStudio();
+}
+function studioTouche(e){
+  if (!document.querySelector('.stu-liste')) return false;
+  if (e.key === 'ArrowDown'){ e.preventDefault(); studioDeplacer(1); return true; }
+  if (e.key === 'ArrowUp'){ e.preventDefault(); studioDeplacer(-1); return true; }
+  if (e.key === ' ' || e.code === 'Space'){
+    e.preventDefault();
+    var p = studio.plat[studio.index];
+    if (p) studioEnregistrer(p.cle, p.t, studio.index);
+    return true;
+  }
+  if (e.key === 'Enter'){
+    e.preventDefault();
+    var q = studio.plat[studio.index];
+    if (q) jouerClip(q.cle);
+    return true;
+  }
+  return false;
+}
+
+/* ══════════════ ÉVÉNEMENTS ══════════════ */
+document.addEventListener('click', function(ev){
+  var el = ev.target.closest('[data-letter],[data-col],[data-act]');
+  if (!el || el.disabled) return;
+
+  if (el.hasAttribute('data-letter')){
+    var L = el.getAttribute('data-letter');
+    if (ROLE === 'host'){ var ap = activePlayer(S); if (ap && ap.local) hostLetter(ap.pid, L); }
+    else Net.send({ ev:'letter', pid:MYPID, l:L });
+    return;
+  }
+  if (el.hasAttribute('data-col')){
+    var c = parseInt(el.getAttribute('data-col'),10);
+    var retrait = !!(S && S.step === 'retirer');
+    if (ROLE === 'host'){
+      if (retrait){
+        var pr = S.retrait ? findPlayer(S, S.retrait.par) : null;
+        if (pr && pr.local) hostRetirer(pr.pid, c);
+      } else {
+        var a2 = activePlayer(S);
+        if (a2 && a2.local) hostDrop(a2.pid, c);
+      }
+    } else Net.send({ ev: retrait ? 'retire' : 'drop', pid:MYPID, c:c });
+    return;
+  }
+
+  var act = el.getAttribute('data-act');
+  switch (act){
+    case 'create':   hostStart(uid(4)); break;
+    case 'join': {
+      var f = document.getElementById('joinCode');
+      var code = norm(f.value).slice(0,4);
+      if (code.length !== 4){ f.focus(); return; }
+      history.replaceState(null,'', '?s=' + code);
+      playerStart(code);
+      break;
+    }
+    case 'roue': {
+      if (ROLE === 'host'){ var ar = activePlayer(S); if (ar && ar.local) hostRoue(ar.pid); }
+      else Net.send({ ev:'roue', pid:MYPID });
+      break;
+    }
+    case 'passe': {
+      if (ROLE === 'host'){ var apa = activePlayer(S); if (apa && apa.local) hostPasse(apa.pid); }
+      else Net.send({ ev:'passe', pid:MYPID });
+      break;
+    }
+    case 'team':     playerJoin(el.getAttribute('data-team')); break;
+    case 'leave':    playerLeave(); break;
+    case 'addlocal': hostAddLocal(el.getAttribute('data-team'), parseInt(el.getAttribute('data-seat'),10)); break;
+    case 'kick':     hostKick(el.getAttribute('data-pid')); break;
+    case 'begin':    hostBegin(); break;
+    case 'next':     hostNextManche(); break;
+    case 'tolobby':  S.phase = 'lobby'; S.winCells = []; S.lastDrop = null; S.msg = null; push(); break;
+    case 'reset':    hostReset(); break;
+    case 'son':      basculerSon(); break;
+    case 'voix':     basculerVoix(); break;
+    case 'avatar':   choisirAvatar(el.getAttribute('data-av')); break;
+    case 'studio':   ouvrirStudio(); break;
+    case 'stu-rec':  studioEnregistrer(el.getAttribute('data-cle'), el.getAttribute('data-t'),
+                                       parseInt(el.getAttribute('data-i'), 10)); break;
+    case 'stu-play': jouerClip(el.getAttribute('data-cle')); break;
+    case 'stu-del':  studioSupprimer(el.getAttribute('data-cle')); break;
+    case 'stu-mode': studioMode(el.getAttribute('data-mode')); break;
+    case 'stu-export': studioExporter(); break;
+    case 'stu-import': { var fi = document.getElementById('stuFichier'); if (fi) fi.click(); break; }
+    case 'stu-clear': studioToutEffacer(); break;
+    case 'enigmes':  openEnigmes(); break;
+    case 'enig-close': closeModal(); break;
+    case 'enig-save': {
+      var ta = document.getElementById('enigTxt');
+      var list = parseEnigmes(ta.value);
+      if (!list.length){ alert('Aucune énigme valide. Utilisez le format : MOT | définition'); return; }
+      lsSet('p4_enigmes', ta.value);
+      if (S){ S.used = []; }
+      closeModal();
+      alert(list.length + ' énigme(s) enregistrée(s). Elles seront utilisées dès la prochaine énigme tirée.');
+      break;
+    }
+    case 'enig-default': {
+      lsDel('p4_enigmes');
+      var t2 = document.getElementById('enigTxt');
+      if (t2){ t2.value = enigmesEnTexte(ENIGMES_PAR_DEFAUT); t2.dispatchEvent(new Event('input')); }
+      break;
+    }
+    case 'baseurl': {
+      var cur = baseUrl();
+      var v2 = prompt('Adresse publique de cette page (celle qui sera encodée dans le QR code) :', cur);
+      if (v2 === null) return;
+      v2 = v2.trim();
+      if (v2) lsSet('p4_base', v2.replace(/\?.*$/,'')); else lsDel('p4_base');
+      renderHost();
+      break;
+    }
+    case 'fullscreen':
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+      break;
+  }
+});
+document.addEventListener('keydown', function(e){
+  var champ = document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if (!champ && studioTouche(e)) return;
+  if (e.key === 'Escape' && $('#modalHost').innerHTML) closeModal();
+  if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'joinCode'){
+    var b = document.querySelector('[data-act="join"]'); b && b.click();
+  }
+});
+
+/* ══════════════ DÉMARRAGE ══════════════ */
+(function boot(){
+  var q = new URLSearchParams(location.search);
+  var s = norm(q.get('s') || '').slice(0,4);
+  if (s.length === 4){ playerStart(s); return; }
+  var resume = lsGet('p4_host_code');
+  if (q.get('host') === '1' && resume){ hostStart(resume); return; }
+  show('scr-home');
+})();
+</script>
+</body>
+</html>
