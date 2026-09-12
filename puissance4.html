@@ -504,16 +504,18 @@ var ENIGMES_PAR_DEFAUT = [
      'rien'    : aucun effet, la main passe simplement a l'equipe adverse
 
    Pour rendre la roue plus ou moins genereuse, ajoutez ou retirez des
-   segments. Reglage actuel : cinq cases, dont trois sans effet, donc la roue
-   ne donne rien trois fois sur cinq. Les segments sont ranges en alternance
-   pour que les trois cases grises ne se touchent pas sur le disque.
+   segments. Reglage actuel : six cases, dont trois sans effet, donc la roue
+   ne donne rien une fois sur deux. Les segments alternent case grise et case
+   coloree, pour que les trois cases grises ne se touchent jamais sur le
+   disque, y compris entre la derniere et la premiere.
    ═══════════════════════════════════════════════════════════════════════════ */
 var ROUE = [
   { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' },
   { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
   { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' },
   { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' },
-  { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' }
+  { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' },
+  { res:'adv',     libelle:"Tu bloques le prochain coup de ton adversaire", couleur:'#3b82f6' }
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1526,9 +1528,9 @@ function appliquerRoue(){
   var detail = '';
   if (res === 'adv'){
     S.skip[adv]++;
-    detail = 'L’équipe ' + NOM[adv] + ' saute son prochain tour, l’équipe ' + NOM[equipe] + ' rejoue.';
+    detail = 'L’équipe ' + NOM[adv] + ' est bloquée, l’équipe ' + NOM[equipe] + ' joue deux fois de suite.';
     beep('good');
-    finTour(S, 'good', 'La roue joue en faveur de l’équipe ' + NOM[equipe] + ' !');
+    finTour(S, 'good', 'Coup bloqué : l’équipe ' + NOM[equipe] + ' rejoue aussitôt !');
   } else if (res === 'soi'){
     S.skip[equipe]++;
     detail = 'L’équipe ' + NOM[equipe] + ' sautera son prochain tour.';
@@ -1705,7 +1707,8 @@ function preparerEffets(st, anim){
     confettisEnAttente = { couleur: st.roueRes.couleur, plein:false };
     annonceEnAttente = { chapeau:'Roue bonus', titre: st.roueRes.libelle,
       texte: st.roueRes.detail || '', couleur: st.roueRes.couleur, duree:4400 };
-    paroleEnAttente = { t:st.roueRes.libelle, k:st.roueRes.res === 'retirer' ? 'good' : 'bad' };
+    paroleEnAttente = { t:st.roueRes.libelle,
+      k:(st.roueRes.res === 'retirer' || st.roueRes.res === 'adv') ? 'good' : 'bad' };
     return;
   }
   if (anim.blague && st.blague && st.blague.k !== 'win'){
