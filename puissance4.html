@@ -252,6 +252,10 @@ canvas.confettis{position:fixed;inset:0;pointer-events:none;z-index:90}
 .stu-modes button{padding:7px 13px;border-radius:20px;border:1.5px solid var(--line);
   background:rgba(255,255,255,.05);font-size:.84rem;font-weight:600;transition:.15s}
 .stu-modes button.on{border-color:var(--orange);background:rgba(240,108,0,.18);color:#fff}
+.stu-voix{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;
+  padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.03)}
+.stu-voix select{flex:1;min-width:190px;background:rgba(255,255,255,.06);border:1.5px solid var(--line);
+  border-radius:var(--r);padding:7px 9px;font-size:.86rem}
 .stu-liste{max-height:48vh;overflow:auto;border:1px solid var(--line);border-radius:var(--r);
   background:rgba(0,0,0,.18)}
 .stu-groupe{position:sticky;top:0;background:#141c2e;padding:8px 12px;font-family:var(--cond);
@@ -500,18 +504,16 @@ var ENIGMES_PAR_DEFAUT = [
      'rien'    : aucun effet, la main passe simplement a l'equipe adverse
 
    Pour rendre la roue plus ou moins genereuse, ajoutez ou retirez des
-   segments (par exemple quatre 'retirer' et deux 'subir'). Deux segments
-   'rien' sur huit font une case blanche une fois sur quatre.
+   segments. Reglage actuel : cinq cases, dont trois sans effet, donc la roue
+   ne donne rien trois fois sur cinq. Les segments sont ranges en alternance
+   pour que les trois cases grises ne se touchent pas sur le disque.
    ═══════════════════════════════════════════════════════════════════════════ */
 var ROUE = [
+  { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' },
   { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
+  { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' },
   { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' },
-  { res:'rien',    libelle:"Il y a rien à gratter, va voir ailleurs", couleur:'#7a869e' },
-  { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
-  { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' },
-  { res:'rien',    libelle:"Il y a rien à gratter, va voir ailleurs", couleur:'#7a869e' },
-  { res:'retirer', libelle:"Vous retirez un jeton adverse", couleur:'#2ecc71' },
-  { res:'subir',   libelle:"L’adversaire vous retire un jeton", couleur:'#e5322d' }
+  { res:'rien',    libelle:"Va voir ailleurs, il y a rien à gagner ici", couleur:'#7a869e' }
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -804,19 +806,55 @@ function prechargerAvatars(st){
    quatre voix parleraient en meme temps. */
 /* mode : 'mixte' votre voix puis la synthese en secours, 'perso' votre voix
    seulement, 'synthese' la voix de l'ordinateur seulement */
-var voix = { actif:true, choisie:null, prete:false, mode:'mixte' };
+var voix = { actif:true, choisie:null, prete:false, mode:'mixte', dispo:[], naturelle:false };
+/* Toutes les voix ne se valent pas : les voix dites naturelles ou neurales,
+   servies en ligne par le navigateur, sonnent nettement mieux que les vieilles
+   voix locales. On les classe pour retenir la meilleure disponible. */
+function voixNaturelle(v){
+  return /natural|neural|online/i.test(((v && v.name) || '') + ' ' + ((v && v.voiceURI) || ''));
+}
+function scoreVoix(v){
+  var n = (((v.name || '') + ' ' + (v.voiceURI || ''))).toLowerCase();
+  var s = 0;
+  if (/natural|neural/.test(n)) s += 100;
+  if (/online/.test(n)) s += 60;
+  if (/google/.test(n)) s += 45;
+  if (v.localService === false) s += 25;
+  if (/multilingual/.test(n)) s += 8;
+  if (/desktop/.test(n)) s -= 30;        /* anciennes voix SAPI5, les plus mécaniques */
+  if (/hortense/.test(n)) s -= 12;
+  return s;
+}
 function chargerVoix(){
   try{
     if (!window.speechSynthesis) return;
     var liste = window.speechSynthesis.getVoices() || [];
     var fr = [], i;
     for (i = 0; i < liste.length; i++) if (/^fr/i.test(liste[i].lang || '')) fr.push(liste[i]);
-    var prefs = /denise|julie|hortense|charlotte|audrey|thomas|paul|google/i;
+    fr.sort(function(a, b){ return scoreVoix(b) - scoreVoix(a); });
+    voix.dispo = fr;
+    var voulue = lsGet('p4_voix_nom');
     voix.choisie = null;
-    for (i = 0; i < fr.length; i++) if (prefs.test(fr[i].name || '')){ voix.choisie = fr[i]; break; }
+    if (voulue){
+      for (i = 0; i < fr.length; i++) if (fr[i].name === voulue){ voix.choisie = fr[i]; break; }
+    }
     if (!voix.choisie) voix.choisie = fr[0] || null;
+    voix.naturelle = voixNaturelle(voix.choisie);
     voix.prete = !!liste.length;
   }catch(e){}
+}
+function choisirVoixSynthese(nom){
+  lsSet('p4_voix_nom', nom || '');
+  chargerVoix();
+  rendreStudio();
+  testerVoix();
+}
+/* essai a la demande, meme si le jeu est regle sur votre voix enregistree */
+function testerVoix(){
+  var m = voix.mode, a = voix.actif;
+  voix.mode = 'synthese'; voix.actif = true;
+  parler('Voici la voix qui annoncera les messages pendant la partie.', 'good');
+  voix.mode = m; voix.actif = a;
 }
 /* ── Votre voix : clips enregistres au micro ────────────────────────────────
    Chaque phrase du jeu porte une cle stable, calculee sur son texte. Le clip
@@ -913,9 +951,16 @@ function parler(texte, k){
     if (voix.choisie) u.voice = voix.choisie;
     u.lang = 'fr-FR';
     u.volume = 1;
-    /* on chambre plus vite et plus bas, on felicite plus haut */
-    u.rate  = k === 'bad' ? 1.18 : k === 'win' ? 1.02 : 1.1;
-    u.pitch = k === 'bad' ? 0.8  : k === 'win' ? 1.3  : 1.2;
+    /* On reste tout pres du naturel : tirer la hauteur vers le grave ou l'aigu,
+       comme on le faisait avant, donnait un rendu de robot. Les nuances passent
+       maintenant par le debit, et les voix naturelles gardent leur hauteur. */
+    if (voix.naturelle){
+      u.rate  = k === 'bad' ? 1.07 : k === 'win' ? 1.0 : 1.02;
+      u.pitch = 1;
+    } else {
+      u.rate  = k === 'bad' ? 1.06 : k === 'win' ? 0.98 : 1.0;
+      u.pitch = k === 'bad' ? 0.96 : k === 'win' ? 1.06 : 1.04;
+    }
     window.speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -2312,6 +2357,33 @@ function ouvrirStudio(){
     rendreStudio();
   });
 }
+/* Choix de la voix de synthese, celle qui parle quand une phrase n'est pas
+   encore enregistree. Les voix naturelles sont signalees et placees en tete. */
+function studioVoixHTML(){
+  if (!window.speechSynthesis) return '';
+  var l = voix.dispo || [];
+  if (!l.length){
+    return '<div class="stu-voix"><span class="lbl">Voix de synthèse</span>'
+      + '<span class="sub">Aucune voix française détectée sur ce poste.</span></div>';
+  }
+  var options = l.map(function(v){
+    return '<option value="' + esc(v.name) + '"'
+      + (voix.choisie && voix.choisie.name === v.name ? ' selected' : '') + '>'
+      + esc(v.name) + (voixNaturelle(v) ? '  (naturelle)' : '') + '</option>';
+  }).join('');
+  var aNaturelle = false;
+  l.forEach(function(v){ if (voixNaturelle(v)) aNaturelle = true; });
+  return '<div class="stu-voix">'
+    + '<span class="lbl">Voix de synthèse</span>'
+    + '<select onchange="choisirVoixSynthese(this.value)">' + options + '</select>'
+    + '<button class="btn ghost sm" data-act="stu-test">Écouter</button>'
+    + (aNaturelle ? '' :
+        '<span class="sub" style="flex-basis:100%;font-size:.82rem">Seules des voix anciennes '
+        + 'sont installées ici, elles sonnent mécanique. Ouvrez le jeu dans Microsoft Edge : il '
+        + 'donne accès à des voix françaises naturelles sans rien installer. Le plus vivant '
+        + 'reste évidemment votre propre voix, enregistrée ci dessous.</span>')
+    + '</div>';
+}
 function rendreStudio(){
   var groupes = catalogueVoix();
   var total = studio.plat.length, faits = 0;
@@ -2340,6 +2412,7 @@ function rendreStudio(){
 
   var modes = [['mixte','Ma voix, synthèse en secours'],['perso','Ma voix uniquement'],
                ['synthese','Voix de synthèse uniquement']];
+  var blocVoix = studioVoixHTML();
   $('#modalHost').innerHTML = '<div class="modal"><div class="card">'
     + '<div class="h2">Ma voix</div>'
     + '<p class="sub" style="margin:8px 0 0">Enregistrez chaque phrase avec votre micro. Le jeu jouera '
@@ -2354,6 +2427,7 @@ function rendreStudio(){
         return '<button data-act="stu-mode" data-mode="' + m[0] + '"'
           + (voix.mode === m[0] ? ' class="on"' : '') + '>' + m[1] + '</button>';
       }).join('') + '</div>'
+    + blocVoix
     + (studio.alerte ? '<div class="stu-alerte">' + esc(studio.alerte) + '</div>' : '')
     + '<div class="stu-liste" id="stuListe">' + lignes + '</div>'
     + '<div class="stu-pied">'
@@ -2458,6 +2532,7 @@ document.addEventListener('click', function(ev){
     case 'stu-play': jouerClip(el.getAttribute('data-cle')); break;
     case 'stu-del':  studioSupprimer(el.getAttribute('data-cle')); break;
     case 'stu-mode': studioMode(el.getAttribute('data-mode')); break;
+    case 'stu-test': testerVoix(); break;
     case 'stu-export': studioExporter(); break;
     case 'stu-import': { var fi = document.getElementById('stuFichier'); if (fi) fi.click(); break; }
     case 'stu-clear': studioToutEffacer(); break;
