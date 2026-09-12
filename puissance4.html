@@ -521,86 +521,49 @@ var ROUE = [
    s'affichent en grand quelques secondes. Ajoutez les votres librement, une
    phrase par ligne, sans depasser une dizaine de mots pour rester lisible au
    videoprojecteur.
+
+   FREQUENCE_ANNONCE regle l'espacement : 3 signifie une annonce toutes les
+   trois lettres environ, l'ecart reel variant entre deux et quatre pour que
+   ce soit imprevisible. Mettez 1 pour une annonce a chaque lettre, ou un
+   nombre plus grand pour se faire plus rare. La victoire, elle, est toujours
+   annoncee, et l'avatar change de tete a chaque lettre quoi qu'il arrive.
    ═══════════════════════════════════════════════════════════════════════════ */
+var FREQUENCE_ANNONCE = 3;
 var MOTS_RATE = [
   "T’es nul ou quoi ?",
   "Nan mais lâche le clavier",
-  "C’est quoi ça sérieux ?",
   "Zéro. Pointé. Terminé.",
-  "Arrête, tu me fais mal aux yeux",
   "La honte devant toute la salle",
-  "T’es sérieux là ? Sérieux ?",
-  "Bouge de là, tu bloques tout le monde",
   "Réveille toi, on t’attend",
   "Tu tapes au hasard, avoue",
-  "Même la roue se moque de toi",
   "C’est mort, rentre chez toi",
-  "T’as pas révisé, ça se voit",
-  "Ton cerveau est en pause réglementaire",
   "Chut, laisse parler les grands",
-  "Mais t’inventes des lettres",
-  "Rends le téléphone à ton binôme",
   "T’es à côté de la plaque, carrément",
-  "Retourne à l’auto école, vas y",
-  "Bon pour la casse, appelez la dépanneuse",
   "Nul, mais genre vraiment nul",
-  "Ça pique les yeux, arrête",
-  "T’as le cerveau en roue libre",
-  "Tu joues avec les pieds",
   "Sors du terrain, tu gênes",
-  "Boum. Sortie de route.",
-  "Mais tu vises quoi là ?",
-  "Ta réponse a fini dans le fossé",
-  "Alors là c’est la catastrophe",
-  "Il est complètement perdu",
-  "Zéro talent, zéro chance, bravo",
   "Tu veux un indice ou un taxi ?"
 ];
 var MOTS_TROUVE = [
   "C’est propre ça !",
-  "Vas y tranquille, il assure",
   "Le boss, rien de moins",
   "Là t’es chaud, continue",
-  "Il a mis tout le monde d’accord",
-  "Mais quel talent",
   "C’est carré, rien à dire",
-  "Il est chaud bouillant",
   "Là tu régales",
-  "Propre, net, sans bavure",
-  "Il rigole pas lui",
-  "Respect",
-  "Il a trouvé les yeux fermés",
-  "Ça c’est du lourd",
   "Il est en feu, poussez vous",
-  "Continue comme ça",
-  "Cerveau branché sur secteur",
-  "Trop fort, franchement",
-  "L’autre équipe fait la tête",
-  "Chapeau l’artiste",
-  "Il a le flair, ce joueur",
-  "Tu gères la boutique",
+  "Ça c’est du lourd",
   "Direct dans le mille",
-  "Il joue à la maison lui",
-  "Tranquille, il déroule",
-  "Ça sent le sans faute"
+  "Respect",
+  "Tranquille, il déroule"
 ];
 var MOTS_VICTOIRE = [
   "C’est fini, rentrez chez vous",
   "C’est plié, merci au revoir",
-  "Quelle démonstration",
   "L’autre équipe a plus qu’à ranger",
   "Ils ont roulé sur tout le monde",
-  "Les patrons du plateau",
   "Trop facile, presque gênant",
-  "Ils ont mis la fessée",
-  "C’est notre terrain ici",
-  "Rideau. Merci d’être venus.",
-  "On encadre ça et on l’accroche au mur",
-  "Personne peut les tenir",
-  "Ils ont fini le travail",
   "Podium, médaille et tour d’honneur",
-  "Ils étaient trop forts",
-  "L’autre équipe demande la revanche"
+  "Rideau. Merci d’être venus.",
+  "Ils ont fini le travail"
 ];
 /* ═══════════════════════════════════════════════════════════════════════════
    ▲▲▲   FIN DU BLOC DES PIQUES   ▲▲▲
@@ -808,7 +771,7 @@ function avatarSrc(graine, humeur){
 function humeurDe(st, p){
   if (!p) return 'neutre';
   if (st.phase === 'over' && st.winner === p.team) return 'win';
-  if (st.blague && st.blague.pid === p.pid) return st.blague.k === 'win' ? 'win' : st.blague.k;
+  if (st.humeur && st.humeur.pid === p.pid) return st.humeur.k === 'win' ? 'win' : st.humeur.k;
   return 'neutre';
 }
 function avatarHTML(p, humeur, taille, classe){
@@ -1137,7 +1100,7 @@ function newState(code){
     rev:0, code:code, phase:'lobby', players:[], board:emptyBoard(),
     ver:5, turnTeam:'J', seat:{J:0,R:0}, step:'letter', enigme:null, used:[],
     skip:{J:0,R:0}, roue:null, roueRes:null, roueNo:0, retrait:null, msgSaute:null,
-    blague:null, blagueNo:0,
+    blague:null, blagueNo:0, humeur:null, humeurNo:0, compteAnnonce:0,
     score:{J:0,R:0}, manche:1, premier:'J',
     winner:null, winCells:[], nulle:false,
     turnSecs:30, remain:0, msg:null, lastDrop:null
@@ -1191,6 +1154,28 @@ function blaguer(S, k, liste, duree, pid){
   S.blagueNo = (S.blagueNo || 0) + 1;
   S.blague = { no:S.blagueNo, k:k, t:piocher(liste, S.blague && S.blague.t),
                duree:duree || 2600, pid:pid || null };
+}
+/* L'humeur pilote la tete de l'avatar. Elle change a chaque lettre, meme quand
+   aucune phrase n'est annoncee. */
+function humeurer(S, k, pid){
+  S.humeurNo = (S.humeurNo || 0) + 1;
+  S.humeur = { no:S.humeurNo, k:k, pid:pid || null };
+}
+/* Une annonce toutes les FREQUENCE_ANNONCE lettres environ, l'ecart variant
+   d'une fois sur l'autre pour que le groupe ne puisse pas l'anticiper. */
+function annonceDue(S){
+  if (FREQUENCE_ANNONCE <= 1) return true;
+  if (typeof S.compteAnnonce !== 'number' || S.compteAnnonce <= 0){
+    S.compteAnnonce = tirerEcart();
+  }
+  S.compteAnnonce--;
+  if (S.compteAnnonce > 0) return false;
+  S.compteAnnonce = tirerEcart();
+  return true;
+}
+function tirerEcart(){
+  var bas = Math.max(1, FREQUENCE_ANNONCE - 1);
+  return bas + Math.floor(Math.random() * 3);   /* bas, bas+1 ou bas+2 */
 }
 
 /* La main passe systématiquement à l’équipe adverse ; à l’intérieur d’une
@@ -1368,7 +1353,7 @@ function hostBegin(){
   S.phase = 'playing';
   S.board = emptyBoard(); S.winner = null; S.winCells = []; S.nulle = false; S.lastDrop = null;
   S.skip = {J:0,R:0}; S.roue = null; S.roueRes = null; S.retrait = null; S.msgSaute = null;
-  S.blague = null; stopRoue();
+  S.blague = null; S.humeur = null; stopRoue();
   S.enigme = buildEnigme(S);
   S.step = 'letter';
   S.turnTeam = teamCount(S, S.premier) ? S.premier : autreEquipe(S.premier);
@@ -1385,7 +1370,7 @@ function hostNextManche(){
   S.phase = 'playing';
   S.board = emptyBoard(); S.winner = null; S.winCells = []; S.nulle = false; S.lastDrop = null;
   S.skip = {J:0,R:0}; S.roue = null; S.roueRes = null; S.retrait = null; S.msgSaute = null;
-  S.blague = null; stopRoue();
+  S.blague = null; S.humeur = null; stopRoue();
   S.enigme = buildEnigme(S);
   S.step = 'letter';
   S.turnTeam = teamCount(S, S.premier) ? S.premier : autreEquipe(S.premier);
@@ -1419,11 +1404,13 @@ function hostLetter(pid, L){
     S.step = 'drop';
     S.remain = S.turnSecs;
     S.msg = { k:'good', t:esc(ap.name) + ' trouve le ' + L + ' : posez votre jeton !' };
-    blaguer(S, 'good', MOTS_TROUVE, 2600, ap.pid);
+    humeurer(S, 'good', ap.pid);
+    if (annonceDue(S)) blaguer(S, 'good', MOTS_TROUVE, 2600, ap.pid);
     beep('good');
   } else {
     beep('bad');
-    blaguer(S, 'bad', MOTS_RATE, 3000, ap.pid);
+    humeurer(S, 'bad', ap.pid);
+    if (annonceDue(S)) blaguer(S, 'bad', MOTS_RATE, 3000, ap.pid);
     finTour(S, 'bad', L + ' ne fait pas partie des lettres manquantes. La main passe à l’équipe adverse.');
   }
   push();
@@ -1441,7 +1428,8 @@ function hostDrop(pid, col, auto){
   if (win){
     S.phase = 'over'; S.winner = ap.team; S.winCells = win; S.score[ap.team]++;
     S.msg = { k:'good', t:'Quatre jetons alignés : l’équipe ' + NOM[ap.team] + ' remporte la manche !' };
-    blaguer(S, 'win', MOTS_VICTOIRE, 5200, ap.pid);
+    humeurer(S, 'win', ap.pid);
+    blaguer(S, 'win', MOTS_VICTOIRE, 5200, ap.pid);   /* la victoire s'annonce toujours */
     beep('win'); push(); return;
   }
   var intro = auto ? 'Temps écoulé, jeton posé automatiquement. ' : '';
