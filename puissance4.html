@@ -518,6 +518,14 @@ var ROUE = [
   { res:'adv',     libelle:"Tu bloques le prochain coup de ton adversaire", couleur:'#3b82f6' }
 ];
 
+/* La roue n'est plus proposee a chaque jeton pose. Elle surgit une fois
+   toutes les ROUE_ECART_MIN a ROUE_ECART_MAX poses, l'ecart etant retire au
+   sort apres chaque apparition pour que personne ne puisse l'anticiper.
+   Reglage actuel : une fois tous les trois ou quatre jetons, toutes equipes
+   confondues. Mettez 1 et 1 pour revenir a une roue a chaque jeton. */
+var ROUE_ECART_MIN = 3;
+var ROUE_ECART_MAX = 4;
+
 /* ═══════════════════════════════════════════════════════════════════════════
    ▼▼▼   PETITES PIQUES ET COMPLIMENTS   ▼▼▼
 
@@ -1147,7 +1155,7 @@ function newState(code){
     rev:0, code:code, phase:'lobby', players:[], board:emptyBoard(),
     ver:5, turnTeam:'J', seat:{J:0,R:0}, step:'letter', enigme:null, used:[],
     skip:{J:0,R:0}, roue:null, roueRes:null, roueNo:0, retrait:null, msgSaute:null,
-    blague:null, blagueNo:0, humeur:null, humeurNo:0, compteAnnonce:0,
+    blague:null, blagueNo:0, humeur:null, humeurNo:0, compteAnnonce:0, compteRoue:0,
     score:{J:0,R:0}, manche:1, premier:'J',
     winner:null, winCells:[], nulle:false,
     turnSecs:30, remain:0, msg:null, lastDrop:null
@@ -1223,6 +1231,20 @@ function annonceDue(S){
 function tirerEcart(){
   var bas = Math.max(1, FREQUENCE_ANNONCE - 1);
   return bas + Math.floor(Math.random() * 3);   /* bas, bas+1 ou bas+2 */
+}
+/* La roue surgit une fois tous les ROUE_ECART_MIN a ROUE_ECART_MAX jetons. */
+function roueDue(S){
+  if (typeof S.compteRoue !== 'number' || S.compteRoue <= 0){
+    S.compteRoue = tirerEcartRoue();
+  }
+  S.compteRoue--;
+  if (S.compteRoue > 0) return false;
+  S.compteRoue = tirerEcartRoue();
+  return true;
+}
+function tirerEcartRoue(){
+  var bas = Math.max(1, ROUE_ECART_MIN), haut = Math.max(bas, ROUE_ECART_MAX);
+  return bas + Math.floor(Math.random() * (haut - bas + 1));
 }
 
 /* La main passe systématiquement à l’équipe adverse ; à l’intérieur d’une
@@ -1490,9 +1512,14 @@ function hostDrop(pid, col, auto){
     intro += 'Mot entièrement révélé, nouvelle énigme. ';
   }
   S.roue = null;
+  if (!roueDue(S)){            /* pas de roue cette fois : la main passe */
+    finTour(S, 'info', intro + 'Jeton posé, la main passe à l’équipe adverse.');
+    push();
+    return;
+  }
   S.step = 'roue';
   S.remain = S.turnSecs;
-  S.msg = { k:'info', t:intro + 'Tournez la roue, ou passez la main.' };
+  S.msg = { k:'info', t:intro + 'La roue bonus surgit ! Tournez la roue, ou passez la main.' };
   push();
 }
 
@@ -1808,7 +1835,7 @@ function roueBloc(st, monTour, compact, pop){
           + '<button class="btn ghost" data-act="passe">Passer la main</button></div>'
       : '<p class="sub"><b>' + (ap ? esc(ap.name) : 'Le joueur actif') + '</b> décide : tourner la roue ou passer la main.</p>';
   } else {
-    h += '<p class="sub">Proposée après chaque jeton posé.</p>';
+    h += '<p class="sub">Surgit au hasard, une fois tous les trois ou quatre jetons.</p>';
   }
   /* la legende reste lisible en permanence sur le telephone, et a l’ecran
      animateur quand la roue est au repos */
